@@ -32,4 +32,8 @@ public class ProdutoService {
     public Optional<Produto> findById(Long id) {
         return produtoRepository.findById(id);
     }
+
+    public List<Produto> salvarLista(List<Produto> produtos) {
+        return produtoRepository.saveAll(produtos);
+    }
 }
