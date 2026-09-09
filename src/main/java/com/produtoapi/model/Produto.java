@@ -20,13 +20,6 @@ public class Produto {
     private double preco;
     private String status;
 
-    public Produto(String nome, int quantidade, double preco, String status){
-        this.nome = nome;
-        this.quantidade = quantidade;
-        this.preco = preco;
-        this.status = status;
-    }
-
     public Produto(){
         // Construtor vazio
     }
