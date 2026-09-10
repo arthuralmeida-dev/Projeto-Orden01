@@ -8,6 +8,29 @@
 <body>
 <h2>Lista de Produtos - 21 Drop</h2>
 
+<form id="formProduto">
+    <!-- Caixinha para o Nome -->
+    <label>Nome do Produto:</label>
+    <input type="text" id="inputNome" required>
+    <br><br>
+
+    <label>Quantidade:</label>
+    <input type="number" id="inputQuantidade" required>
+    <br><br>
+
+    <label>Preço:</label>
+    <input type="number" id="inputPreco" step="0.01" required>
+    <br><br>
+
+    <label>Status:</label>
+    <input type="text" id="inputStatus" required>
+
+    <!-- Botão de Salvar -->
+    <button type="submit">Salvar Produto</button>
+</form>
+<br>
+
+
 <!-- Tabela que exibirá a lista de produtos -->
 <table id="produtosTable" border="1">
     <thead>
@@ -15,7 +38,9 @@
             <th>ID</th>
             <th>Nome</th>
             <th>Preço</th>
+            <th>Quantidade</th>
         </tr>
+
     </thead>
     <tbody>
     <!-- Linhas da tabela serão inseridas aqui -->
@@ -53,10 +78,12 @@
                     const cellId = row.insertCell(0);
                     const cellNome = row.insertCell(1);
                     const cellPreco = row.insertCell(2);
+                    const cellQuantidade = row.insertCell(3);
                     // Inserir os dados nas células
                     cellId.textContent = produto.id; // Insere o ID do produto na célula
                     cellNome.textContent = produto.nome; // Insere o NOME do produto na célula
                     cellPreco.textContent = produto.preco; // Insere o PREÇO do produto na célula
+                    cellQuantidade.textContent = produto.quantidade; // Insere a quantidade do produto na célula
                     totalProdutos++; // Incrementa o contador de produtos
                 });
                 // Exibe o total de produtos
@@ -71,6 +98,55 @@
 
     // Executa a função listarProdutos quando a página é carregada
     document.addEventListener('DOMContentLoaded', listarProdutos)
+
+
+
+
+    // Essa função vai ser chamada quando o formulário for enviado
+    document.getElementById('formProduto').addEventListener('submit', function(event) {
+
+        // 1. O formulário tenta recarregar a página por padrão. A gente para isso:
+        event.preventDefault();
+
+        // 2. Pegar os valores que o dono digitou nas caixinhas
+        const nomeV = document.getElementById('inputNome').value;
+        const quantidadeV = document.getElementById('inputQuantidade').value;
+        const precoV = document.getElementById('inputPreco').value;
+        const statusV = document.getElementById('inputStatus').value;
+
+
+        // 3. Montar o JSON
+        const produtoJson = {
+            nome: nomeV,
+            quantidade: quantidadeV,
+            preco: precoV,
+            status: statusV,
+        };
+
+        // 4. Aqui entra o fetch (POST)
+        fetch('http://localhost:8080/produtos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(produtoJson)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao salvar produto');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Produto salvo com sucesso!');
+                document.getElementById('formProduto').reset();  // Limpa o formulário
+                document.getElementById('produtosTable').getElementsByTagName('tbody')[0].innerHTML = ''; // Limpa a tabela
+                listarProdutos(); // Recarrega a tabela com os dados atualizados
+            })
+            .catch(error => {
+                alert('Erro: ' + error.message);
+            });
+    });
 
 </script>
 

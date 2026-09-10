@@ -66,4 +66,8 @@ public class PedidoService {
          Nós colocamos o nome do cliente, calculamos o total de todas as linhas (ItemPedido) e carimbamos a data de hoje.
          No final, nós pegamos essa nota inteira e jogamos no banco de dados.*/
     }
+
+    public List<Pedido> listarTodos() {
+        return pedidoRepository.findAll();
+    }
 }

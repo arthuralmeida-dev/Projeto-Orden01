@@ -22,6 +22,11 @@ public class PedidoController {
         return pedidoService.criarPedido(request.getNomeCliente(), request.getItens());
     }
 
+    @GetMapping
+    public List<Pedido> listarTodos() {
+        return pedidoService.listarTodos();
+    }
+
     // Classe auxiliar que representa exatamente o formato do JSON que o HTML vai mandar
     public static class PedidoRequest {
         private String nomeCliente;
