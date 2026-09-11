@@ -20,7 +20,7 @@ public class PedidoService {
     @Autowired
     private PedidoRepository pedidoRepository;
 
-    public Pedido criarPedido(String nomeCliente, List<ItemPedido> itens) {
+    public Pedido criarPedido(String nomeCliente,String formaPagamento, List<ItemPedido> itens) {
 
         Pedido pedido = new Pedido();
 
@@ -41,6 +41,12 @@ public class PedidoService {
 
             // 3. Tira da prateleira e salva no banco de dados
             produtoBanco.setQuantidade(produtoBanco.getQuantidade() - item.getQuantidade());
+
+
+            // Quando estoque zerar, o estado do estoque muda para sem estoque
+            if (produtoBanco.getQuantidade() == 0) {
+                produtoBanco.setStatus("Sem Estoque");
+            }
             produtoRepository.save(produtoBanco); // Salva o PRODUTO!
 
             // 4. Preenche os valores da "linha" da nota (item)
@@ -50,7 +56,9 @@ public class PedidoService {
 
             // 5. Soma esse subtotal no Total da nota
             pedido.setValorTotal(pedido.getValorTotal() + item.getSubTotal());
+
         }
+        pedido.setFormaPagamento(formaPagamento);
 
         // Depois que acabar o for (saiu do laço), salva a "nota" inteira no banco e devolve pro cliente!
         return pedidoRepository.save(pedido);
@@ -65,6 +73,8 @@ public class PedidoService {
          Nós que estamos construindo ela do zero no nosso código Java (new Pedido()).
          Nós colocamos o nome do cliente, calculamos o total de todas as linhas (ItemPedido) e carimbamos a data de hoje.
          No final, nós pegamos essa nota inteira e jogamos no banco de dados.*/
+
+
     }
 
     public List<Pedido> listarTodos() {

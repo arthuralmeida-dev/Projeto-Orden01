@@ -10,6 +10,8 @@
 
 <form id="formProduto">
     <!-- Caixinha para o Nome -->
+    <input type="hidden" id="inputIdProduto">
+
     <label>Nome do Produto:</label>
     <input type="text" id="inputNome" required>
     <br><br>
@@ -39,6 +41,8 @@
             <th>Nome</th>
             <th>Preço</th>
             <th>Quantidade</th>
+            <th>Status</th>
+            <th>Ações</th>
         </tr>
 
     </thead>
@@ -71,6 +75,7 @@
             .then(data => {
                 // Obtém o corpo da tabela
                 const tableBody = document.getElementById('produtosTable').getElementsByTagName('tbody')[0];
+                tableBody.innerHTML = '';
                 let totalProdutos = 0 // Inicializa o contador de produtos
                 // Itera ssobre os dados recebidos e cria as linhas da tabela
                 data.forEach(produto => {
@@ -79,11 +84,18 @@
                     const cellNome = row.insertCell(1);
                     const cellPreco = row.insertCell(2);
                     const cellQuantidade = row.insertCell(3);
+                    const cellStatus = row.insertCell(4);
                     // Inserir os dados nas células
                     cellId.textContent = produto.id; // Insere o ID do produto na célula
                     cellNome.textContent = produto.nome; // Insere o NOME do produto na célula
                     cellPreco.textContent = produto.preco; // Insere o PREÇO do produto na célula
                     cellQuantidade.textContent = produto.quantidade; // Insere a quantidade do produto na célula
+                    cellStatus.textContent = produto.status; // Insere o status do produto na célula
+                    const cellAcoes = row.insertCell(5); // Ações agora é a 5
+                    cellAcoes.innerHTML = `
+                    <button onclick="prepararEdicao(${produto.id}, '${produto.nome}', ${produto.quantidade}, ${produto.preco}, '${produto.status}')">Editar</button>
+                    <button style="color: red;" onclick="excluirProduto(${produto.id})">Excluir</button>
+                    `;
                     totalProdutos++; // Incrementa o contador de produtos
                 });
                 // Exibe o total de produtos
@@ -96,26 +108,17 @@
             });
     }
 
-    // Executa a função listarProdutos quando a página é carregada
-    document.addEventListener('DOMContentLoaded', listarProdutos)
-
-
-
-
     // Essa função vai ser chamada quando o formulário for enviado
     document.getElementById('formProduto').addEventListener('submit', function(event) {
+        event.preventDefault(); // Impede o recarregamento da página
 
-        // 1. O formulário tenta recarregar a página por padrão. A gente para isso:
-        event.preventDefault();
-
-        // 2. Pegar os valores que o dono digitou nas caixinhas
+        // Pega o ID (se existir)
+        const idV = document.getElementById('inputIdProduto').value;
         const nomeV = document.getElementById('inputNome').value;
         const quantidadeV = document.getElementById('inputQuantidade').value;
         const precoV = document.getElementById('inputPreco').value;
         const statusV = document.getElementById('inputStatus').value;
 
-
-        // 3. Montar o JSON
         const produtoJson = {
             nome: nomeV,
             quantidade: quantidadeV,
@@ -123,9 +126,12 @@
             status: statusV,
         };
 
-        // 4. Aqui entra o fetch (POST)
-        fetch('http://localhost:8080/produtos', {
-            method: 'POST',
+        // Se tem ID, é PUT (Atualizar). Se não tem, é POST (Criar novo).
+        const url = idV ? 'http://localhost:8080/produtos/' + idV : 'http://localhost:8080/produtos';
+        const method = idV ? 'PUT' : 'POST';
+
+        fetch(url, {
+            method: method,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -138,8 +144,10 @@
                 return response.json();
             })
             .then(data => {
-                alert('Produto salvo com sucesso!');
+                alert(idV ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!');
+
                 document.getElementById('formProduto').reset();  // Limpa o formulário
+                document.getElementById('inputIdProduto').value = ''; // Limpa o ID escondido
                 document.getElementById('produtosTable').getElementsByTagName('tbody')[0].innerHTML = ''; // Limpa a tabela
                 listarProdutos(); // Recarrega a tabela com os dados atualizados
             })
@@ -148,7 +156,105 @@
             });
     });
 
-</script>
+    // Função chamada quando clica no botão "Editar" da tabela
+    function prepararEdicao(id, nome, qtd, preco, status) {
+        document.getElementById('inputIdProduto').value = id;
+        document.getElementById('inputNome').value = nome;
+        document.getElementById('inputQuantidade').value = qtd;
+        document.getElementById('inputPreco').value = preco;
+        document.getElementById('inputStatus').value = status;
 
+        // Põe o cursor no campo nome para facilitar
+        document.getElementById('inputNome').focus();
+    }
+
+    // Função chamada quando clica no botão "Excluir" da tabela
+    function excluirProduto(id) {
+        if (!confirm("Tem certeza que deseja excluir este produto?")) return;
+
+        fetch('http://localhost:8080/produtos/' + id, { method: 'DELETE' })
+            .then(response => {
+                if(!response.ok) throw new Error("Erro ao excluir produto. Ele pode estar atrelado a um pedido.");
+                alert("Produto excluído com sucesso!");
+                document.getElementById('produtosTable').getElementsByTagName('tbody')[0].innerHTML = '';
+                listarProdutos();
+            })
+            .catch(error => alert(error.message));
+    }
+
+    function carregarVendasDoDia() {
+        // 1. Busca pedidos online
+        fetch('http://localhost:8080/pedidos')
+            .then(res => res.json())
+            .then(pedidos => {
+                const tbody = document.getElementById('tabelaPedidosOnline').getElementsByTagName('tbody')[0];
+                tbody.innerHTML = '';
+                pedidos.forEach(p => {
+                    const tr = tbody.insertRow();
+                    tr.insertCell(0).textContent = p.id;
+                    tr.insertCell(1).textContent = p.nomeCliente;
+                    tr.insertCell(2).textContent = p.formaPagamento;
+                    tr.insertCell(3).textContent = 'R$ ' + p.valorTotal.toFixed(2);
+                });
+            });
+
+        // 2. Busca vendas do PDV (Precisamos criar essa rota no Backend!)
+        fetch('http://localhost:8080/caixa/vendas')
+            .then(res => res.json())
+            .then(vendas => {
+                const tbody = document.getElementById('tabelaVendasBalcao').getElementsByTagName('tbody')[0];
+                tbody.innerHTML = '';
+                vendas.forEach(v => {
+                    const tr = tbody.insertRow();
+                    tr.insertCell(0).textContent = 'ID ' + v.caixa.id;
+                    tr.insertCell(1).textContent = v.criadaEm;
+                    tr.insertCell(2).textContent = v.formaPagamento;
+                    tr.insertCell(3).textContent = 'R$ ' + v.total.toFixed(2);
+                });
+            });
+
+    }
+
+    // Carrega a tabela assim que a página abre
+    document.addEventListener('DOMContentLoaded', listarProdutos);
+</script>
+<hr>
+<h2>Painel do Dia (Resumo de Vendas)</h2>
+
+<button onclick="carregarVendasDoDia()">Atualizar Painel</button>
+
+<div style="display: flex; gap: 20px;">
+    <!-- Tabela de Pedidos Online -->
+    <div>
+        <h3>Pedidos da Loja Online</h3>
+        <table id="tabelaPedidosOnline" border="1">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Pgto</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Tabela de Vendas Balcão (PDV) -->
+    <div>
+        <h3>Vendas do Balcão (PDV)</h3>
+        <table id="tabelaVendasBalcao" border="1">
+            <thead>
+            <tr>
+                <th>Caixa</th>
+                <th>Data/Hora</th>
+                <th>Pgto</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
 </body>
 </html>

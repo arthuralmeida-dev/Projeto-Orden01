@@ -36,4 +36,8 @@ public class ProdutoService {
     public List<Produto> salvarLista(List<Produto> produtos) {
         return produtoRepository.saveAll(produtos);
     }
+
+    public List<Produto> buscarPorNome(String nome) {
+        return produtoRepository.findByNomeContainingIgnoreCase(nome);
+    }
 }

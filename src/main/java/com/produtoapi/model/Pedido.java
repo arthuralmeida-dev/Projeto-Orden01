@@ -62,4 +62,14 @@ public class Pedido {
     public double getValorTotal() {
             return valorTotal;
     }
+
+    private String formaPagamento;
+
+    public String getFormaPagamento() {
+        return formaPagamento;
+    }
+
+    public void setFormaPagamento(String formaPagamento) {
+        this.formaPagamento = formaPagamento;
+    }
 }

@@ -19,7 +19,7 @@ public class PedidoController {
     @PostMapping
     public Pedido realizarPedido(@RequestBody PedidoRequest request) {
         // AQUI CHAMA O SERVICE!
-        return pedidoService.criarPedido(request.getNomeCliente(), request.getItens());
+        return pedidoService.criarPedido(request.getNomeCliente(), request.getFormaPagamento(), request.getItens());
     }
 
     @GetMapping
@@ -30,6 +30,7 @@ public class PedidoController {
     // Classe auxiliar que representa exatamente o formato do JSON que o HTML vai mandar
     public static class PedidoRequest {
         private String nomeCliente;
+        private String formaPagamento;
         private List<ItemPedido> itens;
 
         // Getters e Setters do PedidoRequest
@@ -48,5 +49,12 @@ public class PedidoController {
             this.itens = itens;
         }
 
+        public String getFormaPagamento() {
+            return formaPagamento;
+        }
+
+        public void setFormaPagamento(String formaPagamento) {
+            this.formaPagamento = formaPagamento;
+        }
     }
 }

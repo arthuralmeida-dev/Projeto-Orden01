@@ -45,4 +45,11 @@ public class ProdutoController {
         return produtoService.salvarLista(produtos);
     }
 
+    @GetMapping("/buscar")
+    public List<Produto> buscarPorNome(@RequestParam String nome) {
+        return produtoService.buscarPorNome(nome);
+    }
+
+
+
 }

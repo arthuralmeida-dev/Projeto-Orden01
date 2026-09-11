@@ -11,6 +11,12 @@
 
 <!-- PARTE 1: Vitrine de Produtos -->
 <h3>Produtos Disponíveis</h3>
+
+<label>Buscar Produto:</label>
+<input type="text" id="inputBusca" placeholder="Digite o nome...">
+<button onclick="buscarProdutos()">Pesquisar</button>
+<br><br>
+
 <table id="vitrineTable" border="1">
     <thead>
     <tr>
@@ -45,6 +51,14 @@
 <div id="totalCarrinho"><strong>Total: R$ 0.00</strong></div>
 
 <br>
+
+<label>Forma de Pagamento:</label>
+<select id="selectPagamentoLoja">
+    <option value="PIX">PIX</option>
+    <option value="CARTAO">Cartão</option>
+    <option value="BOLETO">Boleto</option>
+</select>
+<br><br>
 
 <!-- PARTE 3: Finalizar Compra -->
 <label>Nome do Cliente:</label>
@@ -139,6 +153,7 @@
         // 4. Monta o JSON no formato que o PedidoRequest espera
         const pedidoJson = {
             nomeCliente: nomeCliente,
+            formaPagamento: document.getElementById('selectPagamentoLoja').value,
             itens: carrinho
         };
 
@@ -234,6 +249,32 @@
                 alert('Erro ao carregar pedidos: ' + error.message);
             });
     }
+
+    function buscarProdutos() {
+        const termo = document.getElementById('inputBusca').value;
+
+        fetch('http://localhost:8080/produtos/buscar?nome=' + termo)
+            .then(res => res.json())
+            .then(data => {
+                const tableBody = document.getElementById('vitrineTable').getElementsByTagName('tbody')[0];
+                tableBody.innerHTML = ''; // Limpa a tabela
+
+                data.forEach(produto => {
+                    const row = tableBody.insertRow();
+                    row.insertCell(0).textContent = produto.nome;
+                    row.insertCell(1).textContent = produto.preco;
+                    row.insertCell(2).textContent = produto.quantidade;
+
+                    const cellQuantidade = row.insertCell(3);
+                    cellQuantidade.innerHTML = '<input type="number" id="qtd_' + produto.id + '" value="1" min="1">';
+
+                    const cellAcao = row.insertCell(4);
+                    cellAcao.innerHTML = '<button onclick="adicionarAoCarrinho(' + produto.id + ', \'' + produto.nome + '\', ' + produto.preco + ')">Adicionar</button>';
+                });
+            })
+            .catch(error => alert('Erro na busca: ' + error.message));
+    }
+
 </script>
 
 </body>

@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>PDV - 21 Drop</title>
+</head>
+<body>
+<h2>Caixa PDV - 21 Drop</h2>
+
+<!-- TELA 1: ABERTURA DO CAIXA -->
+<div id="telaAbertura">
+    <h3>Abrir Caixa</h3>
+    <label>Operador:</label>
+    <input type="text" id="inputOperador" required>
+    <br><br>
+    <label>Troco Inicial (R$):</label>
+    <input type="number" id="inputTroco" step="0.01" value="0.00" required>
+    <br><br>
+    <button onclick="abrirCaixa()">Abrir Caixa</button>
+</div>
+
+<!-- TELA 2: FRENTE DE CAIXA (Escondida no início) -->
+<div id="telaVenda" style="display: none;">
+    <h3 style="color: green;">Caixa Aberto! Operador: <span id="nomeOperadorInfo"></span> (ID do Caixa: <span id="caixaIdInfo"></span>)</h3>
+
+    <!-- O carrinho do PDV entra aqui no próximo passo! -->
+    <hr>
+    <h4>Passar Produto</h4>
+    <label>ID do Produto:</label>
+    <input type="number" id="inputIdProduto">
+    <label>Qtd:</label>
+    <input type="number" id="inputQtdProduto" value="1" style="width: 50px;">
+    <button onclick="adicionarItemPdv()">Adicionar Item</button>
+
+    <h4>Cupom Fiscal</h4>
+    <table id="tabelaPdv" border="1">
+        <thead>
+        <tr>
+            <th>Produto</th>
+            <th>Qtd</th>
+            <th>Preço Un.</th>
+            <th>Subtotal</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <h3 id="totalPdv">Total: R$ 0.00</h3>
+
+    <hr>
+    <h4>Pagamento</h4>
+    <label>Forma de Pagamento:</label>
+    <select id="selectPagamento">
+        <option value="DINHEIRO">Dinheiro</option>
+        <option value="PIX">PIX</option>
+        <option value="CARTAO">Cartão</option>
+    </select>
+    <br><br>
+    <label>Desconto na Venda (R$):</label>
+    <input type="number" id="inputDesconto" value="0.00" step="0.01">
+    <br><br>
+    <button onclick="finalizarVendaPdv()" style="background-color: green; color: white; padding: 10px;">Finalizar Venda</button>
+
+    <br><br>
+    <button onclick="fecharCaixa()" style="background-color: red; color: white;">Encerrar Expediente (Fechar Caixa)</button>
+</div>
+
+<script>
+    let caixaIdAtual = null; // Guarda o ID do caixa que está operando agora
+
+    function abrirCaixa() {
+        const operador = document.getElementById('inputOperador').value;
+        const troco = document.getElementById('inputTroco').value;
+
+        if (!operador) {
+            alert("Digite o nome do operador!");
+            return;
+        }
+
+        const abrirRequest = {
+            operadorNome: operador,
+            valorInicial: parseFloat(troco)
+        };
+
+        // AQUI É COM VOCÊ!
+
+        fetch('http://localhost:8080/caixa/abrir', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(abrirRequest)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao abrir a caixa');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert("Caixa aberto com sucesso!");
+                caixaIdAtual = data.id; // Salva o ID pra usarmos na venda
+
+                // Muda a tela
+                document.getElementById('telaAbertura').style.display = 'none';
+                document.getElementById('telaVenda').style.display = 'block';
+
+                // Mostra o nome e o ID na tela
+                document.getElementById('nomeOperadorInfo').textContent = data.operadorNome;
+                document.getElementById('caixaIdInfo').textContent = data.id;
+
+            })
+            .catch(error => {
+                alert('Erro: ' + error.message);
+            });
+    }
+
+    let carrinhoPdv = []; // A sacola do operador
+
+    function adicionarItemPdv() {
+        const produtoId = document.getElementById('inputIdProduto').value;
+        const qtd = parseInt(document.getElementById('inputQtdProduto').value);
+
+        if (!produtoId) {
+            alert("Digite o ID do produto!");
+            return;
+        }
+
+        // O PDV vai no Spring Boot perguntar: "Ei, quem é o produto de ID tal?"
+        fetch('http://localhost:8080/produtos/' + produtoId)
+            .then(res => {
+                if (!res.ok) throw new Error("Produto não encontrado!");
+                return res.json();
+            })
+            .then(produto => {
+                // Se achou, bota na sacola!
+                carrinhoPdv.push({
+                    produto: { id: produto.id },
+                    nome: produto.nome,
+                    quantidade: qtd,
+                    precoUnitario: produto.preco,
+                    descontoItem: 0.0,
+                    subtotal: (produto.preco * qtd)
+                });
+
+                atualizarTabelaPdv();
+
+                // Limpa o campo pro operador bipar o próximo item rápido
+                document.getElementById('inputIdProduto').value = '';
+                document.getElementById('inputQtdProduto').value = '1';
+                document.getElementById('inputIdProduto').focus();
+            })
+            .catch(err => alert(err.message));
+    }
+
+    function atualizarTabelaPdv() {
+        const tbody = document.getElementById('tabelaPdv').getElementsByTagName('tbody')[0];
+        tbody.innerHTML = '';
+        let total = 0;
+
+        carrinhoPdv.forEach(item => {
+            const row = tbody.insertRow();
+            row.insertCell(0).textContent = item.nome;
+            row.insertCell(1).textContent = item.quantidade;
+            row.insertCell(2).textContent = item.precoUnitario.toFixed(2);
+            row.insertCell(3).textContent = item.subtotal.toFixed(2);
+            total += item.subtotal;
+        });
+
+        document.getElementById('totalPdv').textContent = 'Total: R$ ' + total.toFixed(2);
+    }
+
+    function finalizarVendaPdv() {
+        if (carrinhoPdv.length === 0) {
+            alert("Passe pelo menos um produto!");
+            return;
+        }
+
+        const vendaJson = {
+            formaPagamento: document.getElementById('selectPagamento').value,
+            desconto: parseFloat(document.getElementById('inputDesconto').value),
+            itens: carrinhoPdv
+        };
+
+        fetch('http://localhost:8080/caixa/' + caixaIdAtual + '/venda', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(vendaJson)
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao registrar venda');
+                return response.json();
+            })
+            .then(data => {
+                alert('Venda registrada com sucesso! ID: ' + data.id + ' | Total: R$ ' + data.total.toFixed(2));
+                carrinhoPdv = [];
+                atualizarTabelaPdv();
+                document.getElementById('inputDesconto').value = '0.00';
+            })
+            .catch(error => alert('Erro: ' + error.message));
+    }
+
+    function fecharCaixa() {
+        if (!confirm('Tem certeza que deseja fechar o caixa?')) return;
+
+        fetch('http://localhost:8080/caixa/' + caixaIdAtual + '/fechar', {
+            method: 'PUT'
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao fechar caixa');
+                return response.json();
+            })
+            .then(data => {
+                alert('Caixa fechado!\n\nResumo:\n- Valor Inicial: R$ ' + data.valorInicial.toFixed(2) + '\n- Total de Vendas: R$ ' + data.totalVendas.toFixed(2) + '\n- Aberto em: ' + data.abertoEm + '\n- Fechado em: ' + data.fechadoEm);
+
+                // Volta pra tela de abertura
+                document.getElementById('telaVenda').style.display = 'none';
+                document.getElementById('telaAbertura').style.display = 'block';
+                caixaIdAtual = null;
+            })
+            .catch(error => alert('Erro: ' + error.message));
+    }
+</script>
+</body>
+</html>
