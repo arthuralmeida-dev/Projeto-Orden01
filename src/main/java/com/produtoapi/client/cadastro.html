@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cadastro - Drop 21</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- Cabeçalho minimalista só com a logo -->
+<header class="topbar">
+    <div class="shell" style="justify-content: center;">
+        <a class="brand" href="loja.html">
+            <span class="brand-type" style="font-size: 20px;">DROP 21<small>URBAN SUPPLY</small></span>
+        </a>
+    </div>
+</header>
+
+<main style="display: flex; justify-content: center; padding: 60px 20px;">
+    <!-- Formulário de Cadastro usando as classes do seu CSS -->
+    <form class="form-card card" id="formCadastro" style="width: 100%; max-width: 450px; padding: 40px;">
+
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="font-size: 26px; text-transform: uppercase; margin: 0;">Criar Conta</h2>
+            <p style="color: var(--muted); font-size: 13px; margin-top: 5px;">Junte-se à Drop 21 e garanta suas peças.</p>
+        </div>
+
+        <div class="field">
+            <label>Nome Completo</label>
+            <input type="text" id="inputNome" required placeholder="Digite seu nome">
+        </div>
+
+        <div class="field">
+            <label>E-mail</label>
+            <input type="email" id="inputEmail" required placeholder="seu@email.com">
+        </div>
+
+        <div class="field">
+            <label>Senha</label>
+            <input type="password" id="inputSenha" required placeholder="Crie uma senha forte">
+        </div>
+
+        <button class="button" type="submit" style="width: 100%; margin-top: 25px; height: 45px;">Finalizar Cadastro</button>
+
+        <p style="text-align: center; margin-top: 20px; font-size: 12px; color: var(--muted);">
+            Já tem uma conta? <a href="#" style="color: var(--red); text-decoration: underline;">Entre aqui</a>
+        </p>
+    </form>
+</main>
+
+<script>
+    // Código Javascript (Pronto) que manda os dados pro seu Java!
+    document.getElementById('formCadastro').addEventListener('submit', function(event) {
+        event.preventDefault(); // Evita recarregar a página
+
+        // Coleta os dados do formulário
+        const usuarioJson = {
+            nome: document.getElementById('inputNome').value,
+            email: document.getElementById('inputEmail').value,
+            senha: document.getElementById('inputSenha').value
+        };
+
+        // Bate na porta do seu UsuarioController no Java
+        fetch('http://localhost:8080/usuarios', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(usuarioJson)
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao criar conta');
+                return response.json();
+            })
+            .then(data => {
+                alert('Conta criada com sucesso! Bem-vindo(a), ' + data.nome);
+                // Redireciona o cliente de volta pra loja automaticamente!
+                window.location.href = 'loja.html';
+            })
+            .catch(error => {
+                alert('Erro: ' + error.message);
+            });
+    });
+</script>
+</body>
+</html>

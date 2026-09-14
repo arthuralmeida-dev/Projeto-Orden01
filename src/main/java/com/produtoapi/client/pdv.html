@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Drop 21 — PDV</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+    <div class="shell">
+        <a class="brand" href="loja.html"><span class="brand-type">DROP 21<small>URBAN SUPPLY</small></span></a>
+        <nav class="nav-links"><a class="nav-link" href="loja.html">Loja</a><a class="nav-link is-current" href="pdv.html">PDV</a><a class="nav-link" href="client-web-listagem.html">Gestão</a></nav>
+    </div>
+</header>
+
+<main>
+    <!-- TELA 1: ABERTURA DO CAIXA -->
+    <section class="pdv-landing" id="telaAbertura">
+        <div class="pdv-open-grid">
+            <div class="pdv-showcase">
+                <p class="eyebrow">Ponto de venda / Drop 21</p>
+                <h1>Venda no seu ritmo.</h1>
+                <p>Uma frente de caixa direta, segura e feita para o corre do balcão.</p>
+            </div>
+            <div class="open-form">
+                <div class="form-header"><p class="eyebrow">Começar turno</p><h2>Abrir caixa</h2></div>
+                <div class="field"><label>Operador responsável</label><input id="inputOperador" type="text" required></div>
+                <div class="field"><label>Fundo de troco (R$)</label><input id="inputTroco" type="number" step="0.01" value="0.00" required></div>
+                <button class="button" onclick="abrirCaixa()">Abrir meu caixa</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- TELA 2: FRENTE DE CAIXA -->
+    <section id="telaVenda" style="display: none;">
+        <div class="pdv-top-status">
+            <div class="shell status-line">
+                <span><span style="color:#54d190">●</span> Caixa aberto</span>
+                <span>Operador: <strong id="nomeOperadorInfo"></strong></span>
+                <span>Caixa: <strong id="caixaIdInfo"></strong></span>
+            </div>
+        </div>
+        <div class="pdv-workspace">
+            <div class="shell">
+                <div class="register-panel">
+                    <div class="scan-area">
+                        <h2>Passar produto</h2>
+                        <div class="scan-controls">
+                            <input id="inputIdProduto" type="number" placeholder="ID">
+                            <input id="inputQtdProduto" type="number" value="1">
+                            <button class="button" onclick="adicionarItemPdv()">Adicionar</button>
+                        </div>
+                    </div>
+                    <div class="table-scroll">
+                        <table id="tabelaPdv">
+                            <thead><tr><th>Produto</th><th>Qtd.</th><th>Preço un.</th><th>Subtotal</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="pdv-total"><span>Total da venda</span><strong id="totalPdv">R$ 0.00</strong></div>
+                </div>
+
+                <aside class="checkout-panel">
+                    <div class="panel-title"><h3>Finalizar venda</h3></div>
+                    <div class="checkout-body">
+                        <div class="field"><label>Forma de pagamento</label><select id="selectPagamento"><option value="DINHEIRO">Dinheiro</option><option value="PIX">PIX</option><option value="CARTAO">Cartão</option></select></div>
+                        <div class="field"><label>Desconto da venda (R$)</label><input id="inputDesconto" type="number" value="0.00" step="0.01"></div>
+                        <button class="button" style="width: 100%; margin-top: 15px;" onclick="finalizarVendaPdv()">Confirmar venda</button>
+                        <button class="close-register" style="margin-top: 30px;" onclick="fecharCaixa()">Encerrar expediente (Fechar caixa)</button>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    let caixaIdAtual = null;
+
+    function abrirCaixa() {
+        const operador = document.getElementById('inputOperador').value;
+        const troco = document.getElementById('inputTroco').value;
+
+        if (!operador) { alert("Digite o nome do operador!"); return; }
+
+        const abrirRequest = { operadorNome: operador, valorInicial: parseFloat(troco) };
+
+        fetch('http://localhost:8080/caixa/abrir', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(abrirRequest)
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao abrir a caixa');
+                return response.json();
+            })
+            .then(data => {
+                alert("Caixa aberto com sucesso!");
+                caixaIdAtual = data.id;
+                document.getElementById('telaAbertura').style.display = 'none';
+                document.getElementById('telaVenda').style.display = 'block';
+                document.getElementById('nomeOperadorInfo').textContent = data.operadorNome;
+                document.getElementById('caixaIdInfo').textContent = data.id;
+            })
+            .catch(error => alert('Erro: ' + error.message));
+    }
+
+    let carrinhoPdv = [];
+
+    function adicionarItemPdv() {
+        const produtoId = document.getElementById('inputIdProduto').value;
+        const qtd = parseInt(document.getElementById('inputQtdProduto').value);
+
+        if (!produtoId) { alert("Digite o ID do produto!"); return; }
+
+        fetch('http://localhost:8080/produtos/' + produtoId)
+            .then(res => {
+                if (!res.ok) throw new Error("Produto não encontrado!");
+                return res.json();
+            })
+            .then(produto => {
+                carrinhoPdv.push({
+                    produto: { id: produto.id }, nome: produto.nome, quantidade: qtd,
+                    precoUnitario: produto.preco, descontoItem: 0.0, subtotal: (produto.preco * qtd)
+                });
+                atualizarTabelaPdv();
+                document.getElementById('inputIdProduto').value = '';
+                document.getElementById('inputQtdProduto').value = '1';
+            })
+            .catch(err => alert(err.message));
+    }
+
+    function atualizarTabelaPdv() {
+        const tbody = document.getElementById('tabelaPdv').getElementsByTagName('tbody')[0];
+        tbody.innerHTML = '';
+        let total = 0;
+
+        carrinhoPdv.forEach(item => {
+            const row = tbody.insertRow();
+            row.insertCell(0).textContent = item.nome;
+            row.insertCell(1).textContent = item.quantidade;
+            row.insertCell(2).textContent = item.precoUnitario.toFixed(2);
+            row.insertCell(3).textContent = item.subtotal.toFixed(2);
+            total += item.subtotal;
+        });
+        document.getElementById('totalPdv').textContent = 'R$ ' + total.toFixed(2);
+    }
+
+    function finalizarVendaPdv() {
+        if (carrinhoPdv.length === 0) { alert("Passe pelo menos um produto!"); return; }
+
+        const vendaJson = {
+            formaPagamento: document.getElementById('selectPagamento').value,
+            desconto: parseFloat(document.getElementById('inputDesconto').value),
+            itens: carrinhoPdv
+        };
+
+        fetch('http://localhost:8080/caixa/' + caixaIdAtual + '/venda', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(vendaJson)
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao registrar venda');
+                return response.json();
+            })
+            .then(data => {
+                alert('Venda registrada com sucesso! ID: ' + data.id);
+                carrinhoPdv = [];
+                atualizarTabelaPdv();
+                document.getElementById('inputDesconto').value = '0.00';
+            })
+            .catch(error => alert('Erro: ' + error.message));
+    }
+
+    function fecharCaixa() {
+        if (!confirm('Tem certeza que deseja fechar o caixa?')) return;
+        fetch('http://localhost:8080/caixa/' + caixaIdAtual + '/fechar', { method: 'PUT' })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao fechar caixa');
+                return response.json();
+            })
+            .then(data => {
+                alert('Caixa fechado! Resumo: Vendas totais R$ ' + data.totalVendas.toFixed(2));
+                document.getElementById('telaVenda').style.display = 'none';
+                document.getElementById('telaAbertura').style.display = 'block';
+                caixaIdAtual = null;
+            })
+            .catch(error => alert('Erro: ' + error.message));
+    }
+</script>
+</body>
+</html>

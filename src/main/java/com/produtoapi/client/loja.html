@@ -3,70 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Loja - 21 Drop</title>
+    <title>Drop 21 — Loja</title>
+    <!-- É ESSA LINHA AQUI QUE TRAZ A BELEZA DO PROJETO -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<!-- CABEÇALHO NOVO ESTILO KABUM -->
+<header class="topbar">
+    <div class="shell" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
 
-<h2>Loja 21 Drop</h2>
+        <!-- 1. Logo (Esquerda) -->
+        <a class="brand" href="loja.html">
+            <span class="brand-type">DROP 21<small>URBAN SUPPLY</small></span>
+        </a>
 
-<!-- PARTE 1: Vitrine de Produtos -->
-<h3>Produtos Disponíveis</h3>
-<table id="vitrineTable" border="1">
-    <thead>
-    <tr>
-        <th>Nome</th>
-        <th>Preço</th>
-        <th>Estoque</th>
-        <th>Quantidade</th>
-        <th>Ação</th>
-    </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+        <!-- 2. Barra de Pesquisa (Meio - Estilo Kabum) -->
+        <div class="search-wrap" style="flex: 1; max-width: 600px; margin: 0 30px; display: flex; gap: 10px;">
+            <input type="text" id="inputBusca" placeholder="Busque por nome do produto..." style="background: rgba(255,255,255,0.05);">
+            <button class="button compact" onclick="buscarProdutos()">Pesquisar</button>
+        </div>
 
-<br>
+        <!-- 3. Menu e Botão de Login (Direita) -->
+        <nav class="nav-links" style="margin-left: 0;">
+            <a class="nav-link" href="cadastro.html" style="color: var(--warning); display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                Entre ou Cadastre-se
+            </a>
+            <a class="nav-link" href="pdv.html">PDV</a>
+            <a class="nav-link" href="client-web-listagem.html">Gestão</a>
+        </nav>
+    </div>
+</header>
 
-<!-- PARTE 2: Carrinho de Compras -->
-<h3>Seu Carrinho</h3>
-<table id="carrinhoTable" border="1">
-    <thead>
-    <tr>
-        <th>Produto</th>
-        <th>Quantidade</th>
-        <th>Preço Unit.</th>
-        <th>Subtotal</th>
-        <th>Ação</th>
-    </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
-<div id="totalCarrinho"><strong>Total: R$ 0.00</strong></div>
+<main>
+    <section class="hero">
+        <div class="shell">
+            <div class="hero-content">
+                <p class="eyebrow">Edição limitada / 2026</p>
+                <h1 class="display">O seu estilo.<br><em>Sem cópia.</em></h1>
+                <p class="hero-copy">Sua próxima peça está aqui.</p>
+            </div>
+        </div>
+        <!-- Logo de fundo sem bloquear a tela -->
+        <div class="hero-drop" style="pointer-events: none;"><div class="drop-disc"></div><div class="drop-twentyone">2<span>1</span></div><div class="drop-slash"></div></div>
+    </section>
 
-<br>
+    <section class="page-section" id="colecao">
+        <div class="shell">
+            <div class="section-head">
+                <div><p class="eyebrow">Estoque em movimento</p><h2 class="section-title">A seleção<br>do momento.</h2></div>
+            </div>
 
-<!-- PARTE 3: Finalizar Compra -->
-<label>Nome do Cliente:</label>
-<input type="text" id="inputCliente" required>
-<button id="btnFinalizar">Finalizar Compra</button>
+            <div class="shop-layout">
+                <!-- VITRINE -->
+                <div class="catalog-shell">
+                    <div class="table-scroll">
+                        <table id="vitrineTable">
+                            <thead><tr><th>Produto</th><th>Preço</th><th>Estoque</th><th>Qtd.</th><th>Ação</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
 
-<!-- PARTE 4: Pedidos Realizados (COLE AQUI!) -->
-<h3>Pedidos Realizados</h3>
-<button onclick="carregarPedidos()">Atualizar Pedidos</button>
-<table id="pedidosTable" border="1">
-    <thead>
-    <tr>
-        <th>Nº Pedido</th>
-        <th>Cliente</th>
-        <th>Total</th>
-        <th>Data</th>
-    </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
-
+                <!-- CARRINHO -->
+                <aside class="cart-panel">
+                    <div class="panel-title"><h3>Sua sacola</h3></div>
+                    <div class="table-scroll" style="max-height: 250px;">
+                        <table id="carrinhoTable">
+                            <thead><tr><th>Produto</th><th>Qtd</th><th>Preço</th><th>Subtotal</th><th></th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="cart-summary">
+                        <div class="total-line"><span>Total</span><strong id="totalCarrinho">R$ 0.00</strong></div>
+                        <div class="checkout-fields">
+                            <div class="field"><label>Seu nome</label><input id="inputCliente" type="text" placeholder="Como podemos te chamar?"></div>
+                            <div class="field"><label>Pagamento</label><select id="selectPagamentoLoja"><option value="PIX">PIX</option><option value="CARTAO">Cartão</option><option value="BOLETO">Boleto</option></select></div>
+                        </div>
+                        <button class="button" id="btnFinalizar" style="width: 100%;">Finalizar pedido</button>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+</main>
 
 <script>
     // A "sacola" do cliente (começa vazia)
@@ -87,32 +107,29 @@
 
         // 3. Atualiza a tabela do carrinho na tela
         atualizarCarrinho();
-
         alert(nome + ' adicionado ao carrinho!');
     }
-
 
     function atualizarCarrinho() {
         const tableBody = document.getElementById('carrinhoTable').getElementsByTagName('tbody')[0];
         tableBody.innerHTML = ''; // Limpa a tabela antes de redesenhar
         let total = 0;
 
-        carrinho.forEach((item, index) => { //index (posição do item na lista)
+        carrinho.forEach((item, index) => {
             const row = tableBody.insertRow();
-            row.insertCell(0).textContent = item.nome;
+            row.insertCell(0).innerHTML = '<strong>' + item.nome + '</strong>';
             row.insertCell(1).textContent = item.quantidade;
             row.insertCell(2).textContent = item.precoUnitario;
             row.insertCell(3).textContent = item.subTotal.toFixed(2);
 
-            // Botão de remover
+            // Botão de remover (com classe de estilo do design novo)
             const cellRemover = row.insertCell(4);
-            cellRemover.innerHTML = '<button onclick="removerDoCarrinho(' + index + ')">Remover</button>';
+            cellRemover.innerHTML = '<button class="remove-link" onclick="removerDoCarrinho(' + index + ')">Remover</button>';
 
             total += item.subTotal;
-
         });
 
-        document.getElementById('totalCarrinho').innerHTML = '<strong>Total: R$ ' + total.toFixed(2) + '</strong>';
+        document.getElementById('totalCarrinho').textContent = 'R$ ' + total.toFixed(2);
     }
 
     function removerDoCarrinho(index) {
@@ -121,39 +138,23 @@
     }
 
     document.getElementById('btnFinalizar').addEventListener('click', function () {
-        // 1. Pega o nome do cliente
         const nomeCliente = document.getElementById('inputCliente').value;
+        if (!nomeCliente) { alert('Digite o nome do cliente!'); return; }
+        if (carrinho.length === 0) { alert('O carrinho está vazio!'); return; }
 
-        // 2. Verifica se o cliente digitou o nome
-        if (!nomeCliente) {
-            alert('Digite o nome do cliente!');
-            return;
-        }
-
-        // 3. Verifica se o carrinho não está vazio
-        if (carrinho.length === 0) {
-            alert('O carrinho está vazio!');
-            return;
-        }
-
-        // 4. Monta o JSON no formato que o PedidoRequest espera
         const pedidoJson = {
             nomeCliente: nomeCliente,
+            formaPagamento: document.getElementById('selectPagamentoLoja').value,
             itens: carrinho
         };
 
-        // 5. Manda pro Spring Boot!
         fetch('http://localhost:8080/pedidos', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(pedidoJson)
         })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao finalizar pedido');
-                }
+                if (!response.ok) throw new Error('Erro ao finalizar pedido');
                 return response.json();
             })
             .then(data => {
@@ -161,80 +162,64 @@
                 carrinho = [];
                 atualizarCarrinho();
                 document.getElementById('inputCliente').value = '';
-
                 document.getElementById('vitrineTable').getElementsByTagName('tbody')[0].innerHTML = '';
                 carregarProdutos();
-
             })
-            .catch(error => {
-                alert('Erro: ' + error.message);
-            });
+            .catch(error => alert('Erro: ' + error.message));
     });
 
-
     function carregarProdutos() {
-        // Faz uma requisção GET para o endpoint de produtos
         fetch('http://localhost:8080/produtos')
-            .then(response => { //O método .then() é usado para encadear ações
-                if (!response.ok) {
-                    // Lança um erro se a resposta não for ok
-                    // Quando um erro é lançado, o fluxo de execução do código é interrompido ele salta para o bloco catch
-                    throw new Error('Erro na rede: ' + response.status);
-                }
-                // Converte a resposta para JSON
-                return response.json(); // Converte a resposta para JSON
+            .then(response => {
+                if (!response.ok) throw new Error('Erro na rede: ' + response.status);
+                return response.json();
             })
             .then(data => {
-                // Obtém o corpo da tabela
                 const tableBody = document.getElementById('vitrineTable').getElementsByTagName('tbody')[0];
-                let totalProdutos = 0 // Inicializa o contador de produtos
-                // Itera ssobre os dados recebidos e cria as linhas da tabela
+                tableBody.innerHTML = '';
                 data.forEach(produto => {
                     const row = tableBody.insertRow()
-                    const cellNome = row.insertCell(0);
-                    const cellPreco = row.insertCell(1);
-                    const cellEstoque = row.insertCell(2);
+                    row.insertCell(0).innerHTML = '<span class="product-name">' + produto.nome + '</span>';
+                    row.insertCell(1).innerHTML = '<span class="price">R$ ' + produto.preco + '</span>';
+                    row.insertCell(2).innerHTML = '<span class="stock">' + produto.quantidade + ' un.</span>';
+
                     const cellQuantidade = row.insertCell(3);
+                    cellQuantidade.innerHTML = '<input type="number" class="quantity-input" id="qtd_' + produto.id + '" value="1" min="1">';
+
                     const cellAcao = row.insertCell(4);
-
-                    // Inserir os dados nas células
-                    cellNome.textContent = produto.nome; // Insere o nome do produto na célula
-                    cellPreco.textContent = produto.preco; // Insere o preço do produto na célula
-                    cellEstoque.textContent = produto.quantidade; // Insere a quantidade do produto na célula
-
-                    // Caixinha para o cliente escolher quantos quer
-                    cellQuantidade.innerHTML = '<input type="number" id="qtd_' + produto.id + '" value="1" min="1">';
-                    // Botão de adicionar ao carrinho
-                    cellAcao.innerHTML = '<button onclick="adicionarAoCarrinho(' + produto.id + ', \'' + produto.nome + '\', ' + produto.preco + ')">Adicionar</button>';
+                    cellAcao.innerHTML = '<button class="button compact" onclick="adicionarAoCarrinho(' + produto.id + ', \'' + produto.nome + '\', ' + produto.preco + ')">Adicionar</button>';
                 });
             })
             .catch(error => {
-                console.error('Erro ao buscar produtos: ', error); // Exibe o erro no console
-                alert('Opa! Não conseguimos carregar os produtos. O servidor está ligado?'); // Mostra um aviso pro cliente
+                console.error('Erro ao buscar produtos: ', error);
+                alert('Opa! Não conseguimos carregar os produtos. O servidor está ligado?');
             });
+    }
+
+    function buscarProdutos() {
+        const termo = document.getElementById('inputBusca').value;
+        fetch('http://localhost:8080/produtos/buscar?nome=' + termo)
+            .then(res => res.json())
+            .then(data => {
+                const tableBody = document.getElementById('vitrineTable').getElementsByTagName('tbody')[0];
+                tableBody.innerHTML = '';
+                data.forEach(produto => {
+                    const row = tableBody.insertRow();
+                    row.insertCell(0).innerHTML = '<span class="product-name">' + produto.nome + '</span>';
+                    row.insertCell(1).innerHTML = '<span class="price">R$ ' + produto.preco + '</span>';
+                    row.insertCell(2).innerHTML = '<span class="stock">' + produto.quantidade + ' un.</span>';
+
+                    const cellQuantidade = row.insertCell(3);
+                    cellQuantidade.innerHTML = '<input type="number" class="quantity-input" id="qtd_' + produto.id + '" value="1" min="1">';
+
+                    const cellAcao = row.insertCell(4);
+                    cellAcao.innerHTML = '<button class="button compact" onclick="adicionarAoCarrinho(' + produto.id + ', \'' + produto.nome + '\', ' + produto.preco + ')">Adicionar</button>';
+                });
+            })
+            .catch(error => alert('Erro na busca: ' + error.message));
     }
 
     document.addEventListener('DOMContentLoaded', carregarProdutos);
-
-    function carregarPedidos() {
-        fetch('http://localhost:8080/pedidos')
-            .then(response => response.json())
-            .then(data => {
-                const tableBody = document.getElementById('pedidosTable').getElementsByTagName('tbody')[0];
-                tableBody.innerHTML = '';
-                data.forEach(pedido => {
-                    const row = tableBody.insertRow();
-                    row.insertCell(0).textContent = pedido.id;
-                    row.insertCell(1).textContent = pedido.nomeCliente;
-                    row.insertCell(2).textContent = 'R$ ' + pedido.valorTotal.toFixed(2);
-                    row.insertCell(3).textContent = pedido.dataPedido;
-                });
-            })
-            .catch(error => {
-                alert('Erro ao carregar pedidos: ' + error.message);
-            });
-    }
 </script>
-
 </body>
 </html>
