@@ -2,152 +2,131 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>PDV - 21 Drop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Drop 21 — PDV</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<h2>Caixa PDV - 21 Drop</h2>
+<header class="topbar">
+    <div class="shell">
+        <a class="brand" href="loja.html"><span class="brand-type">DROP 21<small>URBAN SUPPLY</small></span></a>
+        <nav class="nav-links"><a class="nav-link" href="loja.html">Loja</a><a class="nav-link is-current" href="pdv.html">PDV</a><a class="nav-link" href="client-web-listagem.html">Gestão</a></nav>
+    </div>
+</header>
 
-<!-- TELA 1: ABERTURA DO CAIXA -->
-<div id="telaAbertura">
-    <h3>Abrir Caixa</h3>
-    <label>Operador:</label>
-    <input type="text" id="inputOperador" required>
-    <br><br>
-    <label>Troco Inicial (R$):</label>
-    <input type="number" id="inputTroco" step="0.01" value="0.00" required>
-    <br><br>
-    <button onclick="abrirCaixa()">Abrir Caixa</button>
-</div>
+<main>
+    <!-- TELA 1: ABERTURA DO CAIXA -->
+    <section class="pdv-landing" id="telaAbertura">
+        <div class="pdv-open-grid">
+            <div class="pdv-showcase">
+                <p class="eyebrow">Ponto de venda / Drop 21</p>
+                <h1>Venda no seu ritmo.</h1>
+                <p>Uma frente de caixa direta, segura e feita para o corre do balcão.</p>
+            </div>
+            <div class="open-form">
+                <div class="form-header"><p class="eyebrow">Começar turno</p><h2>Abrir caixa</h2></div>
+                <div class="field"><label>Operador responsável</label><input id="inputOperador" type="text" required></div>
+                <div class="field"><label>Fundo de troco (R$)</label><input id="inputTroco" type="number" step="0.01" value="0.00" required></div>
+                <button class="button" onclick="abrirCaixa()">Abrir meu caixa</button>
+            </div>
+        </div>
+    </section>
 
-<!-- TELA 2: FRENTE DE CAIXA (Escondida no início) -->
-<div id="telaVenda" style="display: none;">
-    <h3 style="color: green;">Caixa Aberto! Operador: <span id="nomeOperadorInfo"></span> (ID do Caixa: <span id="caixaIdInfo"></span>)</h3>
+    <!-- TELA 2: FRENTE DE CAIXA -->
+    <section id="telaVenda" style="display: none;">
+        <div class="pdv-top-status">
+            <div class="shell status-line">
+                <span><span style="color:#54d190">●</span> Caixa aberto</span>
+                <span>Operador: <strong id="nomeOperadorInfo"></strong></span>
+                <span>Caixa: <strong id="caixaIdInfo"></strong></span>
+            </div>
+        </div>
+        <div class="pdv-workspace">
+            <div class="shell">
+                <div class="register-panel">
+                    <div class="scan-area">
+                        <h2>Passar produto</h2>
+                        <div class="scan-controls">
+                            <input id="inputIdProduto" type="number" placeholder="ID">
+                            <input id="inputQtdProduto" type="number" value="1">
+                            <button class="button" onclick="adicionarItemPdv()">Adicionar</button>
+                        </div>
+                    </div>
+                    <div class="table-scroll">
+                        <table id="tabelaPdv">
+                            <thead><tr><th>Produto</th><th>Qtd.</th><th>Preço un.</th><th>Subtotal</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="pdv-total"><span>Total da venda</span><strong id="totalPdv">R$ 0.00</strong></div>
+                </div>
 
-    <!-- O carrinho do PDV entra aqui no próximo passo! -->
-    <hr>
-    <h4>Passar Produto</h4>
-    <label>ID do Produto:</label>
-    <input type="number" id="inputIdProduto">
-    <label>Qtd:</label>
-    <input type="number" id="inputQtdProduto" value="1" style="width: 50px;">
-    <button onclick="adicionarItemPdv()">Adicionar Item</button>
-
-    <h4>Cupom Fiscal</h4>
-    <table id="tabelaPdv" border="1">
-        <thead>
-        <tr>
-            <th>Produto</th>
-            <th>Qtd</th>
-            <th>Preço Un.</th>
-            <th>Subtotal</th>
-        </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-    <h3 id="totalPdv">Total: R$ 0.00</h3>
-
-    <hr>
-    <h4>Pagamento</h4>
-    <label>Forma de Pagamento:</label>
-    <select id="selectPagamento">
-        <option value="DINHEIRO">Dinheiro</option>
-        <option value="PIX">PIX</option>
-        <option value="CARTAO">Cartão</option>
-    </select>
-    <br><br>
-    <label>Desconto na Venda (R$):</label>
-    <input type="number" id="inputDesconto" value="0.00" step="0.01">
-    <br><br>
-    <button onclick="finalizarVendaPdv()" style="background-color: green; color: white; padding: 10px;">Finalizar Venda</button>
-
-    <br><br>
-    <button onclick="fecharCaixa()" style="background-color: red; color: white;">Encerrar Expediente (Fechar Caixa)</button>
-</div>
+                <aside class="checkout-panel">
+                    <div class="panel-title"><h3>Finalizar venda</h3></div>
+                    <div class="checkout-body">
+                        <div class="field"><label>Forma de pagamento</label><select id="selectPagamento"><option value="DINHEIRO">Dinheiro</option><option value="PIX">PIX</option><option value="CARTAO">Cartão</option></select></div>
+                        <div class="field"><label>Desconto da venda (R$)</label><input id="inputDesconto" type="number" value="0.00" step="0.01"></div>
+                        <button class="button" style="width: 100%; margin-top: 15px;" onclick="finalizarVendaPdv()">Confirmar venda</button>
+                        <button class="close-register" style="margin-top: 30px;" onclick="fecharCaixa()">Encerrar expediente (Fechar caixa)</button>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+</main>
 
 <script>
-    let caixaIdAtual = null; // Guarda o ID do caixa que está operando agora
+    let caixaIdAtual = null;
 
     function abrirCaixa() {
         const operador = document.getElementById('inputOperador').value;
         const troco = document.getElementById('inputTroco').value;
 
-        if (!operador) {
-            alert("Digite o nome do operador!");
-            return;
-        }
+        if (!operador) { alert("Digite o nome do operador!"); return; }
 
-        const abrirRequest = {
-            operadorNome: operador,
-            valorInicial: parseFloat(troco)
-        };
-
-        // AQUI É COM VOCÊ!
+        const abrirRequest = { operadorNome: operador, valorInicial: parseFloat(troco) };
 
         fetch('http://localhost:8080/caixa/abrir', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(abrirRequest)
         })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao abrir a caixa');
-                }
+                if (!response.ok) throw new Error('Erro ao abrir a caixa');
                 return response.json();
             })
             .then(data => {
                 alert("Caixa aberto com sucesso!");
-                caixaIdAtual = data.id; // Salva o ID pra usarmos na venda
-
-                // Muda a tela
+                caixaIdAtual = data.id;
                 document.getElementById('telaAbertura').style.display = 'none';
                 document.getElementById('telaVenda').style.display = 'block';
-
-                // Mostra o nome e o ID na tela
                 document.getElementById('nomeOperadorInfo').textContent = data.operadorNome;
                 document.getElementById('caixaIdInfo').textContent = data.id;
-
             })
-            .catch(error => {
-                alert('Erro: ' + error.message);
-            });
+            .catch(error => alert('Erro: ' + error.message));
     }
 
-    let carrinhoPdv = []; // A sacola do operador
+    let carrinhoPdv = [];
 
     function adicionarItemPdv() {
         const produtoId = document.getElementById('inputIdProduto').value;
         const qtd = parseInt(document.getElementById('inputQtdProduto').value);
 
-        if (!produtoId) {
-            alert("Digite o ID do produto!");
-            return;
-        }
+        if (!produtoId) { alert("Digite o ID do produto!"); return; }
 
-        // O PDV vai no Spring Boot perguntar: "Ei, quem é o produto de ID tal?"
         fetch('http://localhost:8080/produtos/' + produtoId)
             .then(res => {
                 if (!res.ok) throw new Error("Produto não encontrado!");
                 return res.json();
             })
             .then(produto => {
-                // Se achou, bota na sacola!
                 carrinhoPdv.push({
-                    produto: { id: produto.id },
-                    nome: produto.nome,
-                    quantidade: qtd,
-                    precoUnitario: produto.preco,
-                    descontoItem: 0.0,
-                    subtotal: (produto.preco * qtd)
+                    produto: { id: produto.id }, nome: produto.nome, quantidade: qtd,
+                    precoUnitario: produto.preco, descontoItem: 0.0, subtotal: (produto.preco * qtd)
                 });
-
                 atualizarTabelaPdv();
-
-                // Limpa o campo pro operador bipar o próximo item rápido
                 document.getElementById('inputIdProduto').value = '';
                 document.getElementById('inputQtdProduto').value = '1';
-                document.getElementById('inputIdProduto').focus();
             })
             .catch(err => alert(err.message));
     }
@@ -165,15 +144,11 @@
             row.insertCell(3).textContent = item.subtotal.toFixed(2);
             total += item.subtotal;
         });
-
-        document.getElementById('totalPdv').textContent = 'Total: R$ ' + total.toFixed(2);
+        document.getElementById('totalPdv').textContent = 'R$ ' + total.toFixed(2);
     }
 
     function finalizarVendaPdv() {
-        if (carrinhoPdv.length === 0) {
-            alert("Passe pelo menos um produto!");
-            return;
-        }
+        if (carrinhoPdv.length === 0) { alert("Passe pelo menos um produto!"); return; }
 
         const vendaJson = {
             formaPagamento: document.getElementById('selectPagamento').value,
@@ -191,7 +166,7 @@
                 return response.json();
             })
             .then(data => {
-                alert('Venda registrada com sucesso! ID: ' + data.id + ' | Total: R$ ' + data.total.toFixed(2));
+                alert('Venda registrada com sucesso! ID: ' + data.id);
                 carrinhoPdv = [];
                 atualizarTabelaPdv();
                 document.getElementById('inputDesconto').value = '0.00';
@@ -201,18 +176,13 @@
 
     function fecharCaixa() {
         if (!confirm('Tem certeza que deseja fechar o caixa?')) return;
-
-        fetch('http://localhost:8080/caixa/' + caixaIdAtual + '/fechar', {
-            method: 'PUT'
-        })
+        fetch('http://localhost:8080/caixa/' + caixaIdAtual + '/fechar', { method: 'PUT' })
             .then(response => {
                 if (!response.ok) throw new Error('Erro ao fechar caixa');
                 return response.json();
             })
             .then(data => {
-                alert('Caixa fechado!\n\nResumo:\n- Valor Inicial: R$ ' + data.valorInicial.toFixed(2) + '\n- Total de Vendas: R$ ' + data.totalVendas.toFixed(2) + '\n- Aberto em: ' + data.abertoEm + '\n- Fechado em: ' + data.fechadoEm);
-
-                // Volta pra tela de abertura
+                alert('Caixa fechado! Resumo: Vendas totais R$ ' + data.totalVendas.toFixed(2));
                 document.getElementById('telaVenda').style.display = 'none';
                 document.getElementById('telaAbertura').style.display = 'block';
                 caixaIdAtual = null;

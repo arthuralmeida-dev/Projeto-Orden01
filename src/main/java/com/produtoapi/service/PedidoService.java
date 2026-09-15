@@ -20,11 +20,13 @@ public class PedidoService {
     @Autowired
     private PedidoRepository pedidoRepository;
 
-    public Pedido criarPedido(String nomeCliente,String formaPagamento, List<ItemPedido> itens) {
+    public Pedido criarPedido(String nomeCliente,String emailCliente, String formaPagamento, List<ItemPedido> itens) {
 
         Pedido pedido = new Pedido();
 
         pedido.setNomeCliente(nomeCliente);
+        pedido.setEmailCliente(emailCliente);
+        pedido.setStatus("PENDENTE");
         pedido.setDataPedido(LocalDateTime.now());
         pedido.setValorTotal(0.0);
 
@@ -58,7 +60,7 @@ public class PedidoService {
             pedido.setValorTotal(pedido.getValorTotal() + item.getSubTotal());
 
         }
-        pedido.setFormaPagamento(formaPagamento);
+        pedido.setFormaPagamento(formaPagamento != null ? formaPagamento : "AGUARDANDO");
 
         // Depois que acabar o for (saiu do laço), salva a "nota" inteira no banco e devolve pro cliente!
         return pedidoRepository.save(pedido);
@@ -79,5 +81,53 @@ public class PedidoService {
 
     public List<Pedido> listarTodos() {
         return pedidoRepository.findAll();
+    }
+
+    // Busca os pedidos de um cliente específico pelo e-mail
+    public List<Pedido> listarPorCliente(String emailCliente) {
+        return pedidoRepository.findByEmailCliente(emailCliente);
+    }
+
+    // Cancela um pedido e devolve os produtos pro estoque
+    public Pedido cancelarPedido(Long pedidoId) {
+        Pedido pedido = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() -> new RuntimeException("Pedido não encontrado!"));
+
+        if (pedido.getStatus().equals("CANCELADO")) {
+            throw new RuntimeException("Este pedido já foi cancelado!");
+        }
+
+        // Devolve cada produto pro estoque
+        for (ItemPedido item : pedido.getItens()) {
+            Produto produtoBanco = produtoRepository.findById(item.getProduto().getId())
+                    .orElseThrow(() -> new RuntimeException("Produto não encontrado!"));
+
+            produtoBanco.setQuantidade(produtoBanco.getQuantidade() + item.getQuantidade());
+
+            if (produtoBanco.getQuantidade() > 0) {
+                produtoBanco.setStatus("Disponivel");
+            }
+            produtoRepository.save(produtoBanco);
+        }
+
+        pedido.setStatus("CANCELADO");
+        return pedidoRepository.save(pedido);
+    }
+
+    // Registra o pagamento de um pedido
+    public Pedido pagarPedido(Long pedidoId, String formaPagamento) {
+        Pedido pedido = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() -> new RuntimeException("Pedido não encontrado!"));
+
+        if (pedido.getStatus().equals("CANCELADO")) {
+            throw new RuntimeException("Não é possível pagar um pedido cancelado!");
+        }
+        if (pedido.getStatus().equals("PAGO")) {
+            throw new RuntimeException("Este pedido já foi pago!");
+        }
+
+        pedido.setFormaPagamento(formaPagamento);
+        pedido.setStatus("PAGO");
+        return pedidoRepository.save(pedido);
     }
 }

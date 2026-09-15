@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Drop 21</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+    <div class="shell" style="justify-content: center;">
+        <a class="brand" href="loja.html"><span class="brand-type" style="font-size: 20px;">DROP 21<small>URBAN SUPPLY</small></span></a>
+    </div>
+</header>
+
+<main style="display: flex; justify-content: center; padding: 60px 20px;">
+    <form class="form-card card" id="formLogin" style="width: 100%; max-width: 400px; padding: 40px;">
+
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="font-size: 26px; text-transform: uppercase; margin: 0;">Bem-vindo de volta</h2>
+            <p style="color: var(--muted); font-size: 13px; margin-top: 5px;">Acesse sua conta para continuar.</p>
+        </div>
+
+        <div class="field">
+            <label>E-mail</label>
+            <input type="email" id="inputEmailLogin" required placeholder="seu@email.com">
+        </div>
+
+        <div class="field">
+            <label>Senha</label>
+            <input type="password" id="inputSenhaLogin" required placeholder="Sua senha">
+        </div>
+
+        <button class="button" type="submit" style="width: 100%; margin-top: 25px; height: 45px;">Entrar</button>
+
+        <p style="text-align: center; margin-top: 20px; font-size: 12px; color: var(--muted);">
+            Ainda não tem conta? <a href="cadastro.html" style="color: var(--warning); text-decoration: underline;">Cadastre-se</a>
+        </p>
+    </form>
+</main>
+
+<script>
+    document.getElementById('formLogin').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Pega o que o usuário digitou usando os IDs
+        const loginData = {
+            email: document.getElementById('inputEmailLogin').value,
+            senha: document.getElementById('inputSenhaLogin').value
+        };
+
+        // Bate na porta "/login" que criamos no Java
+        fetch('http://localhost:8080/usuarios/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(loginData)
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('E-mail ou senha incorretos!');
+                return response.json();
+            })
+            .then(usuarioBackend => {
+                alert('Bem-vindo(a) de volta, ' + usuarioBackend.nome + '!');
+                // Sucesso! Salvamos o usuário real do banco no navegador
+                localStorage.setItem('usuarioLogado', JSON.stringify(usuarioBackend));
+                window.location.href = 'loja.html';
+            })
+            .catch(error => {
+                // Dá o aviso se a senha estiver errada
+                alert(error.message);
+            });
+    });
+</script>
+</body>
+</html>

@@ -14,14 +14,12 @@ public class Pedido {
     private String nomeCliente;
     private LocalDateTime dataPedido;
     private double valorTotal;
+    private String emailCliente;
+    private String status = "PENDENTE";
 
-    /*public Pedido(Long id, String nomeCliente, LocalDateTime dataPedido, double valorTotal ){
-        this.id = id;
-        this.nomeCliente = nomeCliente;
-        this.dataPedido = dataPedido;
-        this.valorTotal = valorTotal;
-    }
-    */
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private java.util.List<ItemPedido> itens;
+
 
     // Construtor vazio (obrigatório pro Spring)
     public Pedido() {
@@ -72,4 +70,28 @@ public class Pedido {
     public void setFormaPagamento(String formaPagamento) {
         this.formaPagamento = formaPagamento;
     }
+
+    public String getEmailCliente() {
+        return emailCliente;
+    }
+
+    public void setEmailCliente(String emailCliente) {
+        this.emailCliente = emailCliente;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public java.util.List<ItemPedido> getItens() {
+        return itens;
+    }
+    public void setItens(java.util.List<ItemPedido> itens) {
+        this.itens = itens;
+    }
+
 }

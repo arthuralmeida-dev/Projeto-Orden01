@@ -19,7 +19,7 @@ public class PedidoController {
     @PostMapping
     public Pedido realizarPedido(@RequestBody PedidoRequest request) {
         // AQUI CHAMA O SERVICE!
-        return pedidoService.criarPedido(request.getNomeCliente(), request.getFormaPagamento(), request.getItens());
+        return pedidoService.criarPedido(request.getNomeCliente(), request.getEmailCliente(), request.getFormaPagamento(), request.getItens());
     }
 
     @GetMapping
@@ -27,9 +27,28 @@ public class PedidoController {
         return pedidoService.listarTodos();
     }
 
+    // Busca os pedidos de um cliente pelo e-mail
+    @GetMapping("/cliente")
+    public List<Pedido> listarPorCliente(@RequestParam String email) {
+        return pedidoService.listarPorCliente(email);
+    }
+
+    // Cancela um pedido e devolve o estoque
+    @PutMapping("/{id}/cancelar")
+    public Pedido cancelarPedido(@PathVariable Long id) {
+        return pedidoService.cancelarPedido(id);
+    }
+
+    // Endpoint para pagar um pedido
+    @PutMapping("/{id}/pagar")
+    public Pedido pagarPedido(@PathVariable Long id, @RequestBody PagamentoRequest pagamento) {
+        return pedidoService.pagarPedido(id, pagamento.getFormaPagamento());
+    }
+
     // Classe auxiliar que representa exatamente o formato do JSON que o HTML vai mandar
     public static class PedidoRequest {
         private String nomeCliente;
+        private String emailCliente;
         private String formaPagamento;
         private List<ItemPedido> itens;
 
@@ -56,5 +75,29 @@ public class PedidoController {
         public void setFormaPagamento(String formaPagamento) {
             this.formaPagamento = formaPagamento;
         }
+
+        public String getEmailCliente() {
+            return emailCliente;
+        }
+
+        public void setEmailCliente(String emailCliente) {
+            this.emailCliente = emailCliente;
+        }
+
+
     }
+
+    // Classe que recebe o pagamento do Javascript
+    public static class PagamentoRequest {
+        private String formaPagamento;
+
+        public String getFormaPagamento() {
+            return formaPagamento;
+        }
+
+        public void setFormaPagamento(String formaPagamento) {
+            this.formaPagamento = formaPagamento;
+        }
+    }
+
 }

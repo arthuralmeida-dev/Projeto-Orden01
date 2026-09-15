@@ -3,258 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lista de Produtos</title>
+    <title>Drop 21 — Gestão</title>
+    <!-- O CSS puxado com o nome certinho! -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<h2>Lista de Produtos - 21 Drop</h2>
+<!-- Cabeçalho (Menu Superior) -->
+<header class="topbar">
+    <div class="shell" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <a class="brand" href="loja.html">
+            <span class="brand-type">DROP 21<small>URBAN SUPPLY</small></span>
+        </a>
 
-<form id="formProduto">
-    <!-- Caixinha para o Nome -->
-    <input type="hidden" id="inputIdProduto">
+        <!-- Menu preparado para o Javascript preencher -->
+        <nav class="nav-links" id="menuSuperior" style="margin-left: 0;"></nav>
+    </div>
+</header>
 
-    <label>Nome do Produto:</label>
-    <input type="text" id="inputNome" required>
-    <br><br>
+<main class="dashboard">
+    <div class="shell">
+        <!-- Banner do Dono -->
+        <section class="dashboard-banner">
+            <p class="eyebrow">Área restrita / Gestão</p>
+            <h1>Controle com<br><em>atitude.</em></h1>
+            <p>Gerencie seus produtos, estoque e resultados do dia aqui.</p>
+        </section>
 
-    <label>Quantidade:</label>
-    <input type="number" id="inputQuantidade" required>
-    <br><br>
+        <!-- Parte de cima: Cadastro e Tabela de Produtos -->
+        <div class="dashboard-grid" style="margin-top: 30px;">
 
-    <label>Preço:</label>
-    <input type="number" id="inputPreco" step="0.01" required>
-    <br><br>
+            <!-- Formulário de Produto -->
+            <form class="form-card card" id="formProduto">
+                <input type="hidden" id="inputIdProduto">
+                <h2 style="margin-bottom: 20px;">Novo produto</h2>
 
-    <label>Status:</label>
-    <input type="text" id="inputStatus" required>
+                <div class="field">
+                    <label>Nome do produto</label>
+                    <input id="inputNome" type="text" required>
+                </div>
+                <div class="field">
+                    <label>Quantidade em Estoque</label>
+                    <input id="inputQuantidade" type="number" required>
+                </div>
+                <div class="field">
+                    <label>Preço de Venda (R$)</label>
+                    <input id="inputPreco" type="number" step="0.01" required>
+                </div>
+                <div class="field">
+                    <label>Status</label>
+                    <input id="inputStatus" type="text" value="ATIVO" required>
+                </div>
 
-    <!-- Botão de Salvar -->
-    <button type="submit">Salvar Produto</button>
-</form>
-<br>
+                <button class="button" type="submit" style="width: 100%; margin-top: 15px;">Salvar produto</button>
+            </form>
 
+            <!-- Tabela de Produtos (Inventário) -->
+            <section class="table-card">
+                <div class="panel-title"><h2>Seu Inventário</h2></div>
+                <div class="table-scroll">
+                    <table id="produtosTable">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Produto</th>
+                            <th>Preço</th>
+                            <th>Estoque</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- Preenchido pelo JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
 
-<!-- Tabela que exibirá a lista de produtos -->
-<table id="produtosTable" border="1">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>Preço</th>
-            <th>Quantidade</th>
-            <th>Status</th>
-            <th>Ações</th>
-        </tr>
+        <!-- Parte de baixo: Painel do Dia (Vendas) -->
+        <section class="sales-grid" style="margin-top: 30px;">
+            <!-- Pedidos da Loja Online -->
+            <article class="sales-card table-card">
+                <div class="panel-title"><h3>Pedidos da Loja Online</h3></div>
+                <div class="table-scroll" style="max-height: 300px;">
+                    <table id="tabelaPedidosOnline">
+                        <thead><tr><th>ID</th><th>Cliente</th><th>Pgto</th><th>Total</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </article>
 
-    </thead>
-    <tbody>
-    <!-- Linhas da tabela serão inseridas aqui -->
-    </tbody>
-</table>
+            <!-- Vendas do PDV -->
+            <article class="sales-card table-card">
+                <div class="panel-title"><h3>Vendas do Balcão (PDV)</h3></div>
+                <div class="table-scroll" style="max-height: 300px;">
+                    <table id="tabelaVendasBalcao">
+                        <thead><tr><th>Caixa</th><th>Data / hora</th><th>Pgto</th><th>Total</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
 
-<!-- Mensagem de erro -->
-<div id="erroMensagem" style ="color: red; display: none;">
-    Erro ao buscar produtos. Por favor, tente novamente mais tarde.
-</div>
+        <!-- Botão para carregar as vendas -->
+        <div style="display:flex;justify-content:center;margin-top:24px; margin-bottom: 50px;">
+            <button class="button" type="button" onclick="carregarVendasDoDia()">Atualizar Painel de Vendas</button>
+        </div>
 
-<div id="totalProdutos">Total de Produtos: 0</div>
+    </div>
+</main>
 
-<!-- Função JavaScrpt -->
 <script>
-    function listarProdutos() {
-        // Faz uma requisção GET para o endpoint de produtos
-        fetch('http://localhost:8080/produtos')
-            .then(response => { //O método .then() é usado para encadear ações
-                if (!response.ok) {
-                    // Lança um erro se a resposta não for ok
-                    // Quando um erro é lançado, o fluxo de execução do código é interrompido ele salta para o bloco catch
-                    throw new Error('Erro na rede: ' + response.status);
-                }
-                // Converte a resposta para JSON
-                return response.json(); // Converte a resposta para JSON
-            })
-            .then(data => {
-                // Obtém o corpo da tabela
-                const tableBody = document.getElementById('produtosTable').getElementsByTagName('tbody')[0];
-                tableBody.innerHTML = '';
-                let totalProdutos = 0 // Inicializa o contador de produtos
-                // Itera ssobre os dados recebidos e cria as linhas da tabela
-                data.forEach(produto => {
-                    const row = tableBody.insertRow()
-                    const cellId = row.insertCell(0);
-                    const cellNome = row.insertCell(1);
-                    const cellPreco = row.insertCell(2);
-                    const cellQuantidade = row.insertCell(3);
-                    const cellStatus = row.insertCell(4);
-                    // Inserir os dados nas células
-                    cellId.textContent = produto.id; // Insere o ID do produto na célula
-                    cellNome.textContent = produto.nome; // Insere o NOME do produto na célula
-                    cellPreco.textContent = produto.preco; // Insere o PREÇO do produto na célula
-                    cellQuantidade.textContent = produto.quantidade; // Insere a quantidade do produto na célula
-                    cellStatus.textContent = produto.status; // Insere o status do produto na célula
-                    const cellAcoes = row.insertCell(5); // Ações agora é a 5
-                    cellAcoes.innerHTML = `
-                    <button onclick="prepararEdicao(${produto.id}, '${produto.nome}', ${produto.quantidade}, ${produto.preco}, '${produto.status}')">Editar</button>
-                    <button style="color: red;" onclick="excluirProduto(${produto.id})">Excluir</button>
-                    `;
-                    totalProdutos++; // Incrementa o contador de produtos
-                });
-                // Exibe o total de produtos
-                document.getElementById('totalProdutos').textContent = 'Total de Produtos: ' + totalProdutos;
-            })
-            .catch(error => {
-                console.error('Erro ao buscar produtos: ', error); // Exibe o erro no console
-                // Exibe a mensagem a mensagem de erro
-                document.getElementById('erroMensagem').style.display = 'block'; // Exibe a mensagem de erro
-            });
+    // ----------------------------------------------------
+    // LÓGICA DE SEGURANÇA E MENU
+    // ----------------------------------------------------
+    function carregarMenu() {
+        const userStr = localStorage.getItem('usuarioLogado');
+        const nav = document.getElementById('menuSuperior');
+        if (!nav) return;
+
+        if (userStr) {
+            const usuario = JSON.parse(userStr);
+
+            if (usuario.role !== 'ROLE_DONO') {
+                alert('Acesso negado! Área exclusiva para a gerência.');
+                window.location.href = 'loja.html';
+                return;
+            }
+
+            nav.innerHTML = `
+                <a class="nav-link" href="loja.html">Loja</a>
+                <a class="nav-link" href="pdv.html">PDV</a>
+                <a class="nav-link is-current" href="client-web-listagem.html">Gestão</a>
+                <a class="nav-link" href="#" style="color: var(--success); display: flex; align-items: center; gap: 5px; margin-left: 20px;">
+                    👤 Olá, ${usuario.nome.split(' ')[0]}
+                </a>
+                <a href="#" onclick="sairDaConta()" style="color: var(--muted); font-size: 12px; margin-left: 10px; text-decoration: underline;">Sair</a>
+            `;
+        } else {
+            window.location.href = 'login.html';
+        }
     }
 
-    // Essa função vai ser chamada quando o formulário for enviado
+    function sairDaConta() {
+        localStorage.removeItem('usuarioLogado');
+        window.location.href = 'loja.html';
+    }
+
+    // ----------------------------------------------------
+    // O SEU CÓDIGO ORIGINAL DE PRODUTOS
+    // ----------------------------------------------------
+    function listarProdutos() {
+        fetch('http://localhost:8080/produtos')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro na rede: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const tableBody = document.getElementById('produtosTable').getElementsByTagName('tbody')[0];
+                tableBody.innerHTML = '';
+
+                data.forEach(produto => {
+                    const row = tableBody.insertRow()
+                    row.insertCell(0).textContent = produto.id;
+                    row.insertCell(1).innerHTML = '<strong style="color:white;">' + produto.nome + '</strong>';
+                    row.insertCell(2).textContent = 'R$ ' + produto.preco;
+                    row.insertCell(3).textContent = produto.quantidade + ' un.';
+                    row.insertCell(4).textContent = produto.status;
+
+                    const cellAcoes = row.insertCell(5);
+                    cellAcoes.innerHTML = `
+                    <div style="display:flex;gap:7px;">
+                        <button class="button compact ghost" onclick="prepararEdicao(${produto.id}, '${produto.nome}', ${produto.quantidade}, ${produto.preco}, '${produto.status}')">Editar</button>
+                        <button class="button compact danger" onclick="excluirProduto(${produto.id})">Excluir</button>
+                    </div>`;
+                });
+            })
+            .catch(error => console.error('Erro ao buscar produtos: ', error));
+    }
+
+    // Carrega tudo ao abrir a página
+    document.addEventListener('DOMContentLoaded', function() {
+        carregarMenu();
+        listarProdutos();
+    });
+
+    // Salvar ou Atualizar Produto
     document.getElementById('formProduto').addEventListener('submit', function(event) {
-        event.preventDefault(); // Impede o recarregamento da página
+        event.preventDefault();
 
-        // Pega o ID (se existir)
         const idV = document.getElementById('inputIdProduto').value;
-        const nomeV = document.getElementById('inputNome').value;
-        const quantidadeV = document.getElementById('inputQuantidade').value;
-        const precoV = document.getElementById('inputPreco').value;
-        const statusV = document.getElementById('inputStatus').value;
-
         const produtoJson = {
-            nome: nomeV,
-            quantidade: quantidadeV,
-            preco: precoV,
-            status: statusV,
+            id: idV ? parseInt(idV) : null,
+            nome: document.getElementById('inputNome').value,
+            quantidade: document.getElementById('inputQuantidade').value,
+            preco: document.getElementById('inputPreco').value,
+            status: document.getElementById('inputStatus').value,
         };
 
-        // Se tem ID, é PUT (Atualizar). Se não tem, é POST (Criar novo).
         const url = idV ? 'http://localhost:8080/produtos/' + idV : 'http://localhost:8080/produtos';
         const method = idV ? 'PUT' : 'POST';
 
         fetch(url, {
             method: method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(produtoJson)
         })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao salvar produto');
-                }
-                return response.json();
-            })
-            .then(data => {
+                if (!response.ok) throw new Error('Erro ao salvar produto');
                 alert(idV ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!');
 
-                document.getElementById('formProduto').reset();  // Limpa o formulário
-                document.getElementById('inputIdProduto').value = ''; // Limpa o ID escondido
-                document.getElementById('produtosTable').getElementsByTagName('tbody')[0].innerHTML = ''; // Limpa a tabela
-                listarProdutos(); // Recarrega a tabela com os dados atualizados
+                document.getElementById('formProduto').reset();
+                document.getElementById('inputIdProduto').value = '';
+                listarProdutos();
             })
-            .catch(error => {
-                alert('Erro: ' + error.message);
-            });
+            .catch(error => alert('Erro: ' + error.message));
     });
 
-    // Função chamada quando clica no botão "Editar" da tabela
     function prepararEdicao(id, nome, qtd, preco, status) {
         document.getElementById('inputIdProduto').value = id;
         document.getElementById('inputNome').value = nome;
         document.getElementById('inputQuantidade').value = qtd;
         document.getElementById('inputPreco').value = preco;
         document.getElementById('inputStatus').value = status;
-
-        // Põe o cursor no campo nome para facilitar
         document.getElementById('inputNome').focus();
     }
 
-    // Função chamada quando clica no botão "Excluir" da tabela
     function excluirProduto(id) {
-        if (!confirm("Tem certeza que deseja excluir este produto?")) return;
-
+        if (!confirm("Tem certeza que deseja excluir este produto? O botão não tem volta!")) return;
         fetch('http://localhost:8080/produtos/' + id, { method: 'DELETE' })
             .then(response => {
-                if(!response.ok) throw new Error("Erro ao excluir produto. Ele pode estar atrelado a um pedido.");
-                alert("Produto excluído com sucesso!");
-                document.getElementById('produtosTable').getElementsByTagName('tbody')[0].innerHTML = '';
+                if(!response.ok) throw new Error("Erro ao excluir. Ele pode estar num pedido.");
+                alert("Excluído com sucesso!");
                 listarProdutos();
             })
             .catch(error => alert(error.message));
     }
 
+    // ----------------------------------------------------
+    // PAINEL DE VENDAS
+    // ----------------------------------------------------
     function carregarVendasDoDia() {
-        // 1. Busca pedidos online
+        // Pedidos da Loja Online
         fetch('http://localhost:8080/pedidos')
-            .then(res => res.json())
+            .then(response => response.json())
             .then(pedidos => {
                 const tbody = document.getElementById('tabelaPedidosOnline').getElementsByTagName('tbody')[0];
                 tbody.innerHTML = '';
-                pedidos.forEach(p => {
-                    const tr = tbody.insertRow();
-                    tr.insertCell(0).textContent = p.id;
-                    tr.insertCell(1).textContent = p.nomeCliente;
-                    tr.insertCell(2).textContent = p.formaPagamento;
-                    tr.insertCell(3).textContent = 'R$ ' + p.valorTotal.toFixed(2);
+                pedidos.forEach(pedido => {
+                    const row = tbody.insertRow();
+                    row.insertCell(0).textContent = '#' + pedido.id;
+                    row.insertCell(1).textContent = pedido.nomeCliente || 'Visitante';
+                    row.insertCell(2).textContent = pedido.formaPagamento || '-';
+                    const total = pedido.valorTotal ? pedido.valorTotal.toFixed(2) : '0.00';
+                    row.insertCell(3).innerHTML = `<strong style="color: var(--success);">R$ ${total}</strong>`;
                 });
-            });
+            })
+            .catch(error => console.error('Erro ao carregar pedidos:', error));
 
-        // 2. Busca vendas do PDV (Precisamos criar essa rota no Backend!)
+        // Vendas do PDV (Balcão)
         fetch('http://localhost:8080/caixa/vendas')
-            .then(res => res.json())
+            .then(response => response.json())
             .then(vendas => {
                 const tbody = document.getElementById('tabelaVendasBalcao').getElementsByTagName('tbody')[0];
                 tbody.innerHTML = '';
-                vendas.forEach(v => {
-                    const tr = tbody.insertRow();
-                    tr.insertCell(0).textContent = 'ID ' + v.caixa.id;
-                    tr.insertCell(1).textContent = v.criadaEm;
-                    tr.insertCell(2).textContent = v.formaPagamento;
-                    tr.insertCell(3).textContent = 'R$ ' + v.total.toFixed(2);
+                vendas.forEach(venda => {
+                    const row = tbody.insertRow();
+                    const idCaixa = venda.caixa ? venda.caixa.id : (venda.caixaId || '1');
+                    row.insertCell(0).textContent = 'Caixa #' + idCaixa;
+
+                    let dataFormatada = 'Hoje';
+                    if (venda.criadaEm) {
+                        dataFormatada = new Date(venda.criadaEm).toLocaleString('pt-BR');
+                    }
+                    row.insertCell(1).textContent = dataFormatada;
+                    row.insertCell(2).textContent = venda.formaPagamento || '-';
+                    const total = venda.total ? venda.total.toFixed(2) : '0.00';
+                    row.insertCell(3).innerHTML = `<strong style="color: var(--success);">R$ ${total}</strong>`;
                 });
-            });
-
+            })
+            .catch(error => console.error('Erro ao carregar vendas do balcão:', error));
     }
-
-    // Carrega a tabela assim que a página abre
-    document.addEventListener('DOMContentLoaded', listarProdutos);
 </script>
-<hr>
-<h2>Painel do Dia (Resumo de Vendas)</h2>
-
-<button onclick="carregarVendasDoDia()">Atualizar Painel</button>
-
-<div style="display: flex; gap: 20px;">
-    <!-- Tabela de Pedidos Online -->
-    <div>
-        <h3>Pedidos da Loja Online</h3>
-        <table id="tabelaPedidosOnline" border="1">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Pgto</th>
-                <th>Total</th>
-            </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-    <!-- Tabela de Vendas Balcão (PDV) -->
-    <div>
-        <h3>Vendas do Balcão (PDV)</h3>
-        <table id="tabelaVendasBalcao" border="1">
-            <thead>
-            <tr>
-                <th>Caixa</th>
-                <th>Data/Hora</th>
-                <th>Pgto</th>
-                <th>Total</th>
-            </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-</div>
 </body>
 </html>

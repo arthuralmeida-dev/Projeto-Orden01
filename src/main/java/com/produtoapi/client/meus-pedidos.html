@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Meus Pedidos - Drop 21</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+    <div class="shell" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <a class="brand" href="loja.html"><span class="brand-type">DROP 21<small>URBAN SUPPLY</small></span></a>
+        <nav class="nav-links" style="margin-left: 0;">
+            <a class="nav-link" href="loja.html">Loja</a>
+            <a class="nav-link is-current" href="meus-pedidos.html">Meus Pedidos</a>
+        </nav>
+    </div>
+</header>
+
+<main style="padding: 40px 20px;">
+    <div class="shell" style="max-width: 900px; margin: 0 auto;">
+        <h2 style="text-transform: uppercase; margin-bottom: 5px;">Meus Pedidos</h2>
+        <p style="color: var(--muted); font-size: 13px; margin-bottom: 30px;">Acompanhe, pague ou cancele suas compras.</p>
+
+        <div class="table-scroll">
+            <table id="tabelaPedidos">
+                <thead>
+                <tr>
+                    <th>Pedido</th>
+                    <th>Data</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Pagamento</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <p id="msgVazio" style="text-align: center; color: var(--muted); margin-top: 30px; display: none;">
+            Você ainda não fez nenhum pedido.
+        </p>
+    </div>
+</main>
+
+<script>
+    // Verifica se está logado
+    const logado = localStorage.getItem('usuarioLogado');
+    if (!logado) {
+        alert('Você precisa estar logado para ver seus pedidos!');
+        window.location.href = 'login.html';
+    }
+
+    const usuario = JSON.parse(logado);
+
+    //atualiza a tabela depois de pagar ou cancelar
+    function carregarPedidos() {
+        fetch('http://localhost:8080/pedidos/cliente?email=' + usuario.email)
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao buscar pedidos');
+                return response.json();
+            })
+            .then(pedidos => {
+                const tbody = document.getElementById('tabelaPedidos').getElementsByTagName('tbody')[0];
+                tbody.innerHTML = '';
+
+                if (pedidos.length === 0) {
+                    document.getElementById('msgVazio').style.display = 'block';
+                    return;
+                }
+                document.getElementById('msgVazio').style.display = 'none';
+
+                pedidos.forEach(pedido => {
+                    const row = tbody.insertRow();
+
+                    row.insertCell(0).innerHTML = '<strong>#' + pedido.id + '</strong>';
+
+                    let dataFormatada = '-';
+                    if (pedido.dataPedido) {
+                        dataFormatada = new Date(pedido.dataPedido).toLocaleString('pt-BR');
+                    }
+                    row.insertCell(1).textContent = dataFormatada;
+                    row.insertCell(2).innerHTML = '<strong style="color: var(--success);">R$ ' + pedido.valorTotal.toFixed(2) + '</strong>';
+
+                    // Status com cor diferente pra cada situação
+                    const cellStatus = row.insertCell(3);
+                    if (pedido.status === 'CANCELADO') {
+                        cellStatus.innerHTML = '<span style="color: var(--red);">CANCELADO</span>';
+                    } else if (pedido.status === 'PAGO') {
+                        cellStatus.innerHTML = '<span style="color: var(--success);">PAGO ✓</span>';
+                    } else {
+                        cellStatus.innerHTML = '<span style="color: var(--warning);">PENDENTE</span>';
+                    }
+
+                    // Coluna de pagamento
+                    const cellPagamento = row.insertCell(4);
+                    if (pedido.status === 'PENDENTE') {
+                        // Se ainda não pagou, mostra o select para escolher e pagar
+                        cellPagamento.innerHTML = `
+                            <select id="pgto_${pedido.id}" style="padding: 5px; background: var(--surface); color: white; border: 1px solid var(--border);">
+                                <option value="PIX">PIX</option>
+                                <option value="CARTAO">Cartão</option>
+                                <option value="BOLETO">Boleto</option>
+                            </select>
+                        `;
+                    } else {
+                        cellPagamento.textContent = pedido.formaPagamento || '-';
+                    }
+
+                    // Botões de ação
+                    const cellAcao = row.insertCell(5);
+                    if (pedido.status === 'PENDENTE') {
+                        cellAcao.innerHTML = `
+                            <div style="display: flex; gap: 6px;">
+                                <button class="button compact" onclick="pagarPedido(${pedido.id})">Pagar</button>
+                                <button class="button compact danger" onclick="cancelarPedido(${pedido.id})">Cancelar</button>
+                            </div>
+                        `;
+                    } else {
+                        cellAcao.textContent = '-';
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao carregar seus pedidos.');
+            });
+    }
+
+    function pagarPedido(id) {
+        const formaPagamento = document.getElementById('pgto_' + id).value;
+
+        if (!confirm('Confirmar pagamento do pedido #' + id + ' via ' + formaPagamento + '?')) return;
+
+        fetch('http://localhost:8080/pedidos/' + id + '/pagar', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ formaPagamento: formaPagamento })
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao registrar pagamento');
+                alert('Pagamento do pedido #' + id + ' confirmado com sucesso!');
+                carregarPedidos();
+            })
+            .catch(error => alert('Erro: ' + error.message));
+    }
+
+    function cancelarPedido(id) {
+        if (!confirm('Tem certeza que deseja cancelar o pedido #' + id + '? Os produtos voltarão ao estoque.')) return;
+
+        fetch('http://localhost:8080/pedidos/' + id + '/cancelar', {
+            method: 'PUT'
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao cancelar pedido');
+                alert('Pedido #' + id + ' cancelado com sucesso!');
+                carregarPedidos();
+            })
+            .catch(error => alert('Erro: ' + error.message));
+    }
+
+    document.addEventListener('DOMContentLoaded', carregarPedidos);
+</script>
+</body>
+</html>
