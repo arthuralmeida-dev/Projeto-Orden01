@@ -554,11 +554,6 @@ tbody tr:last-child td { border-bottom: 0; }
     box-shadow: 0 0 8px var(--success);
 }
 
-.stock.is-low::before {
-    background: var(--warning);
-    box-shadow: 0 0 8px var(--warning);
-}
-
 .quantity-input {
     width: 64px;
     min-height: 36px;
