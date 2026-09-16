@@ -214,7 +214,7 @@
     // O SEU CÓDIGO ORIGINAL DE PRODUTOS
     // ----------------------------------------------------
     function listarProdutos() {
-        fetch('http://localhost:8080/produtos')
+        fetch('https://drop21-backend.onrender.com/produtos')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Erro na rede: ' + response.status);
@@ -264,7 +264,7 @@
             status: document.getElementById('inputStatus').value,
         };
 
-        const url = idV ? 'http://localhost:8080/produtos/' + idV : 'http://localhost:8080/produtos';
+        const url = idV ? 'https://drop21-backend.onrender.com/produtos/' + idV : 'https://drop21-backend.onrender.com/produtos';
         const method = idV ? 'PUT' : 'POST';
 
         fetch(url, {
@@ -294,7 +294,7 @@
 
     function excluirProduto(id) {
         if (!confirm("Tem certeza que deseja excluir este produto? O botão não tem volta!")) return;
-        fetch('http://localhost:8080/produtos/' + id, { method: 'DELETE' })
+        fetch('https://drop21-backend.onrender.com/produtos/' + id, { method: 'DELETE' })
             .then(response => {
                 if(!response.ok) throw new Error("Erro ao excluir. Ele pode estar num pedido.");
                 mostrarToast("Excluído com sucesso!");
@@ -308,7 +308,7 @@
     // ----------------------------------------------------
     function carregarVendasDoDia() {
         // Pedidos da Loja Online
-        fetch('http://localhost:8080/pedidos')
+        fetch('https://drop21-backend.onrender.com/pedidos')
             .then(response => response.json())
             .then(pedidos => {
                 const tbody = document.getElementById('tabelaPedidosOnline').getElementsByTagName('tbody')[0];
@@ -325,7 +325,7 @@
             .catch(error => console.error('Erro ao carregar pedidos:', error));
 
         // Vendas do PDV (Balcão)
-        fetch('http://localhost:8080/caixa/vendas')
+        fetch('https://drop21-backend.onrender.com/caixa/vendas')
             .then(response => response.json())
             .then(vendas => {
                 const tbody = document.getElementById('tabelaVendasBalcao').getElementsByTagName('tbody')[0];
