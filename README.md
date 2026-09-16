@@ -56,6 +56,19 @@ O Drop 21 é uma plataforma completa que simula o funcionamento de uma loja real
 | `ROLE_OPERADOR` | Loja, Meus Pedidos, PDV |
 | `ROLE_DONO` | Loja, Meus Pedidos, PDV, Gestão |
 
+### 🔑 Credenciais para uso
+
+O sistema já é inicializado automaticamente com dados de teste (DataSeeder). 
+Para testar os perfis de acesso, utilize as seguintes credenciais:
+
+**Perfil de Gestor (Dono)**
+- E-mail: `admin@drop21.com`
+- Senha: `123456`
+
+**Perfil de Caixa (Operador do PDV)**
+- E-mail: `operador@drop21.com`
+- Senha: `123456`
+
 ---
 
 ## 📁 Estrutura do Projeto
