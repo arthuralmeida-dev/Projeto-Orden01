@@ -81,7 +81,7 @@
             role: 'ROLE_CLIENTE'
         };
 
-        fetch('https://drop21-backend.onrender.com/usuarios', {
+        fetch('http://localhost:8080/usuarios', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(usuarioJson)
