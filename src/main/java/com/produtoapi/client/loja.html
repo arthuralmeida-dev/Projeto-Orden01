@@ -99,6 +99,18 @@
         setTimeout(() => toast.remove(), 3000);
     }
 
+    (function () {
+        const bruto = sessionStorage.getItem('toastPendente');
+        if (!bruto) return;
+
+        sessionStorage.removeItem('toastPendente'); // consome uma vez só
+
+        try {
+            const { mensagem, tipo } = JSON.parse(bruto);
+            mostrarToast(mensagem, tipo);
+        } catch (e) {}
+    })();
+
     // ---- Confirm bonito (substitui o confirm feio do navegador) ----
     function mostrarConfirm(mensagem) {
         return new Promise((resolve) => {

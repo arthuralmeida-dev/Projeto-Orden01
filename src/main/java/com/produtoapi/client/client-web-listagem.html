@@ -6,6 +6,33 @@
     <title>Drop 21 — Gestão</title>
     <!-- O CSS puxado com o nome certinho! -->
     <link rel="stylesheet" href="styles.css">
+
+    <style>
+        /* Enquanto não tiver a classe "autorizado", o body inteiro fica invisível.
+           Isso impede qualquer conteúdo de aparecer antes da checagem. */
+        html:not(.autorizado) body { display: none; }
+    </style>
+
+    <script>
+        (function () {
+            let usuario = null;
+            try { usuario = JSON.parse(localStorage.getItem('usuario')); } catch (e) {}
+
+            if (usuario && usuario.role === 'ROLE_DONO') {
+                // libera a página: o body passa a aparecer
+                document.documentElement.classList.add('autorizado');
+            } else {
+                // guarda o recado para a loja.html mostrar
+                sessionStorage.setItem('toastPendente', JSON.stringify({
+                    mensagem: 'Acesso negado! Área exclusiva para a gerência.',
+                    tipo: 'erro'
+                }));
+                // replace: o botão "voltar" do navegador NÃO volta pra cá
+                location.replace('loja.html');
+            }
+        })();
+    </script>
+
 </head>
 <body>
 <!-- Cabeçalho (Menu Superior) -->
@@ -108,6 +135,7 @@
         <!-- Botão para carregar as vendas -->
         <div style="display:flex;justify-content:center;margin-top:24px; margin-bottom: 50px;">
             <button class="button" type="button" onclick="carregarVendasDoDia()">Atualizar Painel de Vendas</button>
+            <button class="button compact danger" type="button" onclick="limparPedidos()">Limpar Todos os Pedidos</button>
         </div>
 
     </div>
@@ -162,11 +190,7 @@
         if (userStr) {
             const usuario = JSON.parse(userStr);
 
-            if (usuario.role !== 'ROLE_DONO') {
-                mostrarToast('Acesso negado! Área exclusiva para a gerência.');
-                window.location.href = 'loja.html';
-                return;
-            }
+
 
             nav.innerHTML = `
                 <a class="nav-link" href="loja.html">Loja</a>
@@ -322,6 +346,18 @@
                 });
             })
             .catch(error => console.error('Erro ao carregar vendas do balcão:', error));
+
+        function limparPedidos() {
+            if (!confirm('ATENÇÃO: Isso vai apagar TODOS os pedidos do sistema. Tem certeza?')) return;
+
+            fetch('http://localhost:8080/pedidos', { method: 'DELETE' })
+                .then(response => {
+                    if (!response.ok) throw new Error('Erro ao limpar pedidos');
+                    alert('Todos os pedidos foram apagados!');
+                    carregarVendasDoDia();
+                })
+                .catch(error => alert('Erro: ' + error.message));
+        }
     }
 </script>
 </body>

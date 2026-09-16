@@ -131,4 +131,14 @@ public class PedidoService {
         pedido.setStatus("PAGO");
         return pedidoRepository.save(pedido);
     }
+
+    // Apaga todos os pedidos do banco
+    public void deletarTodos() {
+        pedidoRepository.deleteAll();
+    }
+
+    // Apaga um pedido específico por ID
+    public void deletarPorId(Long id) {
+        pedidoRepository.deleteById(id);
+    }
 }
