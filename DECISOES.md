@@ -58,11 +58,10 @@ O JavaScript verifica o `role` no `localStorage` e monta o menu dinamicamente. P
 
 ## 5. Sistema de Pedidos: Fluxo e Limpeza (Gestão)
 
-**Decisão:** Implementar status (PENDENTE, PAGO, CANCELADO) separando a compra do pagamento, e fornecer ferramentas gerenciais para deleção em massa.
+**Decisão:** Implementar status (PENDENTE, PAGO, CANCELADO) separando a compra do pagamento.
 
 **Justificativa:** 
 O cliente finaliza a compra sem pagamento e usa a área "Meus Pedidos" para pagar (Dinheiro, PIX, Cartão) ou cancelar.
-Para os gerentes (ROLE_DONO), foi adicionada uma função de "Limpar Todos os Pedidos" para evitar congestionamento no banco de testes. Essa operação exige o cuidado de apagar os itens dependentes (ItemPedido) antes dos Pedidos principais para manter a integridade referencial.
 
 ---
 

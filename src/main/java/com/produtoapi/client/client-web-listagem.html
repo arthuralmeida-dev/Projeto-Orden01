@@ -135,7 +135,6 @@
         <!-- Botão para carregar as vendas -->
         <div style="display:flex;justify-content:center;margin-top:24px; margin-bottom: 50px;">
             <button class="button" type="button" onclick="carregarVendasDoDia()">Atualizar Painel de Vendas</button>
-            <button class="button compact danger" type="button" onclick="limparPedidos()">Limpar Todos os Pedidos</button>
         </div>
 
     </div>
@@ -249,6 +248,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         carregarMenu();
         listarProdutos();
+        carregarVendasDoDia();
     });
 
     // Salvar ou Atualizar Produto
@@ -346,19 +346,12 @@
                 });
             })
             .catch(error => console.error('Erro ao carregar vendas do balcão:', error));
-
-        function limparPedidos() {
-            if (!confirm('ATENÇÃO: Isso vai apagar TODOS os pedidos do sistema. Tem certeza?')) return;
-
-            fetch('http://localhost:8080/pedidos', { method: 'DELETE' })
-                .then(response => {
-                    if (!response.ok) throw new Error('Erro ao limpar pedidos');
-                    alert('Todos os pedidos foram apagados!');
-                    carregarVendasDoDia();
-                })
-                .catch(error => alert('Erro: ' + error.message));
-        }
     }
+
+
+
+
+
 </script>
 </body>
 </html>

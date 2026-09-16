@@ -143,7 +143,6 @@ Para promover um usuário a gestor (`ROLE_DONO`), é necessário editar o banco 
 | POST | `/pedidos` | Criar pedido |
 | PUT | `/pedidos/{id}/pagar` | Registrar pagamento |
 | PUT | `/pedidos/{id}/cancelar` | Cancelar (devolve estoque) |
-| DELETE | `/pedidos` | Limpar todos (Apaga o BD de pedidos) |
 
 ### Usuários
 | Método | Rota | Descrição |

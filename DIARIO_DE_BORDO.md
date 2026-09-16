@@ -132,7 +132,6 @@
 **O que foi feito:**
 - Implementação da dependência `spring-security-crypto` no `pom.xml`.
 - Aplicação de `BCryptPasswordEncoder` no `UsuarioController` para encriptar a senha durante o Cadastro e verificar a hash no Login.
-- Adição da função administrativa "Limpar Todos os Pedidos" para que usuários ROLE_DONO pudessem esvaziar a tabela online via `DELETE` (apagando `ItemPedido` em cascade).
 - Adição do status dinâmico do usuário logado na tela "Meus Pedidos" e opção simplificada de deslogar ("Sair") limpando o local storage da sessão ativa.
 
 **Dificuldades encontradas:**

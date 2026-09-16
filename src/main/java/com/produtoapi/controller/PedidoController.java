@@ -45,17 +45,6 @@ public class PedidoController {
         return pedidoService.pagarPedido(id, pagamento.getFormaPagamento());
     }
 
-    // Apagar todos os pedidos
-    @DeleteMapping
-    public void deletarTodos() {
-        pedidoService.deletarTodos();
-    }
-
-    // Apagar um pedido específico
-    @DeleteMapping("/{id}")
-    public void deletarPorId(@PathVariable Long id) {
-        pedidoService.deletarPorId(id);
-    }
 
     // Classe auxiliar que representa exatamente o formato do JSON que o HTML vai mandar
     public static class PedidoRequest {
