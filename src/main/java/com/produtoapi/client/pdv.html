@@ -76,13 +76,50 @@
 </main>
 
 <script>
+
+    // ---- Toast bonito no lugar do alert ----
+    function mostrarToast(mensagem, tipo) {
+        let container = document.querySelector('.toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + (tipo || 'info');
+        toast.textContent = mensagem;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // ---- Confirm bonito (substitui o confirm feio do navegador) ----
+    function mostrarConfirm(mensagem) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.innerHTML = `
+                <div class="modal-box">
+                    <p>${mensagem}</p>
+                    <div class="modal-botoes">
+                        <button class="btn-confirmar" id="btnSim">Confirmar</button>
+                        <button class="btn-cancelar-modal" id="btnNao">Cancelar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            overlay.querySelector('#btnSim').onclick = () => { overlay.remove(); resolve(true); };
+            overlay.querySelector('#btnNao').onclick = () => { overlay.remove(); resolve(false); };
+        });
+    }
+
     let caixaIdAtual = null;
 
     function abrirCaixa() {
         const operador = document.getElementById('inputOperador').value;
         const troco = document.getElementById('inputTroco').value;
 
-        if (!operador) { alert("Digite o nome do operador!"); return; }
+        if (!operador) { mostrarToast("Digite o nome do operador!"); return; }
 
         const abrirRequest = { operadorNome: operador, valorInicial: parseFloat(troco) };
 
@@ -96,14 +133,14 @@
                 return response.json();
             })
             .then(data => {
-                alert("Caixa aberto com sucesso!");
+                mostrarToast("Caixa aberto com sucesso!");
                 caixaIdAtual = data.id;
                 document.getElementById('telaAbertura').style.display = 'none';
                 document.getElementById('telaVenda').style.display = 'block';
                 document.getElementById('nomeOperadorInfo').textContent = data.operadorNome;
                 document.getElementById('caixaIdInfo').textContent = data.id;
             })
-            .catch(error => alert('Erro: ' + error.message));
+            .catch(error => mostrarToast('Erro: ' + error.message));
     }
 
     let carrinhoPdv = [];
@@ -112,7 +149,7 @@
         const produtoId = document.getElementById('inputIdProduto').value;
         const qtd = parseInt(document.getElementById('inputQtdProduto').value);
 
-        if (!produtoId) { alert("Digite o ID do produto!"); return; }
+        if (!produtoId) { mostrarToast("Digite o ID do produto!"); return; }
 
         fetch('http://localhost:8080/produtos/' + produtoId)
             .then(res => {
@@ -128,7 +165,7 @@
                 document.getElementById('inputIdProduto').value = '';
                 document.getElementById('inputQtdProduto').value = '1';
             })
-            .catch(err => alert(err.message));
+            .catch(err => mostrarToast(err.message));
     }
 
     function atualizarTabelaPdv() {
@@ -148,7 +185,7 @@
     }
 
     function finalizarVendaPdv() {
-        if (carrinhoPdv.length === 0) { alert("Passe pelo menos um produto!"); return; }
+        if (carrinhoPdv.length === 0) { mostrarToast("Passe pelo menos um produto!"); return; }
 
         const vendaJson = {
             formaPagamento: document.getElementById('selectPagamento').value,
@@ -166,12 +203,12 @@
                 return response.json();
             })
             .then(data => {
-                alert('Venda registrada com sucesso! ID: ' + data.id);
+                mostrarToast('Venda registrada com sucesso! ID: ' + data.id);
                 carrinhoPdv = [];
                 atualizarTabelaPdv();
                 document.getElementById('inputDesconto').value = '0.00';
             })
-            .catch(error => alert('Erro: ' + error.message));
+            .catch(error => mostrarToast('Erro: ' + error.message));
     }
 
     function fecharCaixa() {
@@ -182,12 +219,12 @@
                 return response.json();
             })
             .then(data => {
-                alert('Caixa fechado! Resumo: Vendas totais R$ ' + data.totalVendas.toFixed(2));
+                mostrarToast('Caixa fechado! Resumo: Vendas totais R$ ' + data.totalVendas.toFixed(2));
                 document.getElementById('telaVenda').style.display = 'none';
                 document.getElementById('telaAbertura').style.display = 'block';
                 caixaIdAtual = null;
             })
-            .catch(error => alert('Erro: ' + error.message));
+            .catch(error => mostrarToast('Erro: ' + error.message));
     }
 </script>
 </body>

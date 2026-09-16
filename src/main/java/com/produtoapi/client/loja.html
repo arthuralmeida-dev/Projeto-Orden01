@@ -83,6 +83,43 @@
 </main>
 
 <script>
+
+    // ---- Toast bonito no lugar do alert ----
+    function mostrarToast(mensagem, tipo) {
+        let container = document.querySelector('.toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + (tipo || 'info');
+        toast.textContent = mensagem;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // ---- Confirm bonito (substitui o confirm feio do navegador) ----
+    function mostrarConfirm(mensagem) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.innerHTML = `
+                <div class="modal-box">
+                    <p>${mensagem}</p>
+                    <div class="modal-botoes">
+                        <button class="btn-confirmar" id="btnSim">Confirmar</button>
+                        <button class="btn-cancelar-modal" id="btnNao">Cancelar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            overlay.querySelector('#btnSim').onclick = () => { overlay.remove(); resolve(true); };
+            overlay.querySelector('#btnNao').onclick = () => { overlay.remove(); resolve(false); };
+        });
+    }
+
     // =================================================================
     // CONTROLE DE MENU (Esconde/mostra abas dependendo de quem logou)
     // =================================================================
@@ -155,7 +192,7 @@
 
         // 3. Atualiza a tabela do carrinho na tela
         atualizarCarrinho();
-        alert(nome + ' adicionado ao carrinho!');
+        mostrarToast(nome + ' adicionado ao carrinho!');
     }
 
     function atualizarCarrinho() {
@@ -187,7 +224,7 @@
 
     // BOTÃO FINALIZAR
     document.getElementById('btnFinalizar').addEventListener('click', function () {
-        if (carrinho.length === 0) { alert('O carrinho está vazio!'); return; }
+        if (carrinho.length === 0) { mostrarToast('O carrinho está vazio!'); return; }
 
         let nomeDoCliente = 'Visitante';
         const logado = localStorage.getItem('usuarioLogado');
@@ -211,13 +248,13 @@
                 return response.json();
             })
             .then(data => {
-                alert('Pedido realizado com sucesso! ' + nomeDoCliente + ', seus itens já foram separados.');
+                mostrarToast('Pedido realizado com sucesso! ' + nomeDoCliente + ', seus itens já foram separados.');
                 carrinho = [];
                 atualizarCarrinho();
                 document.getElementById('vitrineTable').getElementsByTagName('tbody')[0].innerHTML = '';
                 carregarProdutos();
             })
-            .catch(error => alert('Erro: ' + error.message));
+            .catch(error => mostrarToast('Erro: ' + error.message));
     });
 
     function carregarProdutos() {
@@ -244,7 +281,7 @@
             })
             .catch(error => {
                 console.error('Erro ao buscar produtos: ', error);
-                alert('Opa! Não conseguimos carregar os produtos. O servidor está ligado?');
+                mostrarToast('Opa! Não conseguimos carregar os produtos. O servidor está ligado?');
             });
     }
 
@@ -268,7 +305,7 @@
                     cellAcao.innerHTML = '<button class="button compact" onclick="adicionarAoCarrinho(' + produto.id + ', \'' + produto.nome + '\', ' + produto.preco + ')">Adicionar</button>';
                 });
             })
-            .catch(error => alert('Erro na busca: ' + error.message));
+            .catch(error => mostrarToast('Erro na busca: ' + error.message));
     }
 
     document.addEventListener('DOMContentLoaded', function() {

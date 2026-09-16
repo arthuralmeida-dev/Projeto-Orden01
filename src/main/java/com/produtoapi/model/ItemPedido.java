@@ -1,5 +1,5 @@
 package com.produtoapi.model;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,6 +15,7 @@ public class ItemPedido {
     private Produto produto;
 
     // Indica qual pedido esta linha pertence
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "pedido_id")
     private Pedido pedido;

@@ -1284,4 +1284,94 @@ tbody tr:last-child td { border-bottom: 0; }
         align-items: flex-start;
         flex-direction: column;
     }
+
+}
+
+/* ---- TOAST (Notificação bonita) ---- */
+.toast-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    padding: 14px 24px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    animation: toastIn 0.4s ease, toastOut 0.4s ease 2.6s forwards;
+    max-width: 380px;
+}
+
+.toast.sucesso { background: linear-gradient(135deg, #1db954, #148f3f); }
+.toast.erro    { background: linear-gradient(135deg, #e53935, #b71c1c); }
+.toast.info    { background: linear-gradient(135deg, #1e88e5, #1565c0); }
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateX(60px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes toastOut {
+    from { opacity: 1; }
+    to   { opacity: 0; transform: translateY(-10px); }
+}
+
+/* ---- CONFIRM BONITO (Modal) ---- */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-box {
+    background: #1a1a2e;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.modal-box p {
+    color: white;
+    font-size: 15px;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.modal-botoes {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.modal-botoes button {
+    padding: 10px 28px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.btn-confirmar { background: #1db954; color: white; }
+.btn-confirmar:hover { background: #17a34a; }
+.btn-cancelar-modal { background: transparent; color: var(--muted); border: 1px solid rgba(255,255,255,0.15) !important; }
+.btn-cancelar-modal:hover { background: rgba(255,255,255,0.05); }
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }

@@ -44,10 +44,47 @@
 </main>
 
 <script>
+
+    // ---- Toast bonito no lugar do alert ----
+    function mostrarToast(mensagem, tipo) {
+        let container = document.querySelector('.toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + (tipo || 'info');
+        toast.textContent = mensagem;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // ---- Confirm bonito (substitui o confirm feio do navegador) ----
+    function mostrarConfirm(mensagem) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.innerHTML = `
+                <div class="modal-box">
+                    <p>${mensagem}</p>
+                    <div class="modal-botoes">
+                        <button class="btn-confirmar" id="btnSim">Confirmar</button>
+                        <button class="btn-cancelar-modal" id="btnNao">Cancelar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            overlay.querySelector('#btnSim').onclick = () => { overlay.remove(); resolve(true); };
+            overlay.querySelector('#btnNao').onclick = () => { overlay.remove(); resolve(false); };
+        });
+    }
+
     // Verifica se está logado
     const logado = localStorage.getItem('usuarioLogado');
     if (!logado) {
-        alert('Você precisa estar logado para ver seus pedidos!');
+        mostrarToast('Você precisa estar logado para ver seus pedidos!');
         window.location.href = 'login.html';
     }
 
@@ -97,10 +134,10 @@
                     if (pedido.status === 'PENDENTE') {
                         // Se ainda não pagou, mostra o select para escolher e pagar
                         cellPagamento.innerHTML = `
-                            <select id="pgto_${pedido.id}" style="padding: 5px; background: var(--surface); color: white; border: 1px solid var(--border);">
-                                <option value="PIX">PIX</option>
-                                <option value="CARTAO">Cartão</option>
-                                <option value="BOLETO">Boleto</option>
+                            <select id="pgto_${pedido.id}" style="padding: 5px; background: #1a1a2e; color: white; border: 1px solid var(--line);">
+                                <option style="background: #1a1a2e; color: white;" value="DINHEIRO">Dinheiro</option>
+                                <option style="background: #1a1a2e; color: white;" value="PIX">PIX</option>
+                                <option style="background: #1a1a2e; color: white;" value="CARTAO">Cartão</option>
                             </select>
                         `;
                     } else {
@@ -123,14 +160,15 @@
             })
             .catch(error => {
                 console.error('Erro:', error);
-                alert('Erro ao carregar seus pedidos.');
+                mostrarToast('Erro ao carregar seus pedidos.');
             });
     }
 
-    function pagarPedido(id) {
+    async function pagarPedido(id) {
         const formaPagamento = document.getElementById('pgto_' + id).value;
 
-        if (!confirm('Confirmar pagamento do pedido #' + id + ' via ' + formaPagamento + '?')) return;
+        const ok = await mostrarConfirm('Confirmar pagamento do pedido #' + id + ' via ' + formaPagamento + '?');
+        if (!ok) return;
 
         fetch('http://localhost:8080/pedidos/' + id + '/pagar', {
             method: 'PUT',
@@ -139,24 +177,25 @@
         })
             .then(response => {
                 if (!response.ok) throw new Error('Erro ao registrar pagamento');
-                alert('Pagamento do pedido #' + id + ' confirmado com sucesso!');
+                mostrarToast('Pagamento do pedido #' + id + ' confirmado com sucesso! ✓', 'sucesso');
                 carregarPedidos();
             })
-            .catch(error => alert('Erro: ' + error.message));
+            .catch(error => mostrarToast('Erro: ' + error.message, 'erro'));
     }
 
-    function cancelarPedido(id) {
-        if (!confirm('Tem certeza que deseja cancelar o pedido #' + id + '? Os produtos voltarão ao estoque.')) return;
+    async function cancelarPedido(id) {
+        const ok = await mostrarConfirm('Tem certeza que deseja cancelar o pedido #' + id + '? Os produtos voltarão ao estoque.');
+        if (!ok) return;
 
         fetch('http://localhost:8080/pedidos/' + id + '/cancelar', {
             method: 'PUT'
         })
             .then(response => {
                 if (!response.ok) throw new Error('Erro ao cancelar pedido');
-                alert('Pedido #' + id + ' cancelado com sucesso!');
+                mostrarToast('Pedido #' + id + ' cancelado com sucesso!', 'info');
                 carregarPedidos();
             })
-            .catch(error => alert('Erro: ' + error.message));
+            .catch(error => mostrarToast('Erro: ' + error.message, 'erro'));
     }
 
     document.addEventListener('DOMContentLoaded', carregarPedidos);

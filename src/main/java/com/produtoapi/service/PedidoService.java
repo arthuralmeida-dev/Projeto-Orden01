@@ -58,6 +58,7 @@ public class PedidoService {
 
             // 5. Soma esse subtotal no Total da nota
             pedido.setValorTotal(pedido.getValorTotal() + item.getSubTotal());
+            pedido.setItens(itens);
 
         }
         pedido.setFormaPagamento(formaPagamento != null ? formaPagamento : "AGUARDANDO");

@@ -39,6 +39,43 @@
 </main>
 
 <script>
+
+    // ---- Toast bonito no lugar do alert ----
+    function mostrarToast(mensagem, tipo) {
+        let container = document.querySelector('.toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + (tipo || 'info');
+        toast.textContent = mensagem;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // ---- Confirm bonito (substitui o confirm feio do navegador) ----
+    function mostrarConfirm(mensagem) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.innerHTML = `
+                <div class="modal-box">
+                    <p>${mensagem}</p>
+                    <div class="modal-botoes">
+                        <button class="btn-confirmar" id="btnSim">Confirmar</button>
+                        <button class="btn-cancelar-modal" id="btnNao">Cancelar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            overlay.querySelector('#btnSim').onclick = () => { overlay.remove(); resolve(true); };
+            overlay.querySelector('#btnNao').onclick = () => { overlay.remove(); resolve(false); };
+        });
+    }
+
     document.getElementById('formLogin').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -59,14 +96,14 @@
                 return response.json();
             })
             .then(usuarioBackend => {
-                alert('Bem-vindo(a) de volta, ' + usuarioBackend.nome + '!');
+                mostrarToast('Bem-vindo(a) de volta, ' + usuarioBackend.nome + '!');
                 // Sucesso! Salvamos o usuário real do banco no navegador
                 localStorage.setItem('usuarioLogado', JSON.stringify(usuarioBackend));
                 window.location.href = 'loja.html';
             })
             .catch(error => {
                 // Dá o aviso se a senha estiver errada
-                alert(error.message);
+                mostrarToast(error.message);
             });
     });
 </script>

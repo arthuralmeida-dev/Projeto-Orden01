@@ -114,6 +114,43 @@
 </main>
 
 <script>
+
+    // ---- Toast bonito no lugar do alert ----
+    function mostrarToast(mensagem, tipo) {
+        let container = document.querySelector('.toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + (tipo || 'info');
+        toast.textContent = mensagem;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // ---- Confirm bonito (substitui o confirm feio do navegador) ----
+    function mostrarConfirm(mensagem) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.innerHTML = `
+                <div class="modal-box">
+                    <p>${mensagem}</p>
+                    <div class="modal-botoes">
+                        <button class="btn-confirmar" id="btnSim">Confirmar</button>
+                        <button class="btn-cancelar-modal" id="btnNao">Cancelar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            overlay.querySelector('#btnSim').onclick = () => { overlay.remove(); resolve(true); };
+            overlay.querySelector('#btnNao').onclick = () => { overlay.remove(); resolve(false); };
+        });
+    }
+
     // ----------------------------------------------------
     // LÓGICA DE SEGURANÇA E MENU
     // ----------------------------------------------------
@@ -126,7 +163,7 @@
             const usuario = JSON.parse(userStr);
 
             if (usuario.role !== 'ROLE_DONO') {
-                alert('Acesso negado! Área exclusiva para a gerência.');
+                mostrarToast('Acesso negado! Área exclusiva para a gerência.');
                 window.location.href = 'loja.html';
                 return;
             }
@@ -213,13 +250,13 @@
         })
             .then(response => {
                 if (!response.ok) throw new Error('Erro ao salvar produto');
-                alert(idV ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!');
+                mostrarToast(idV ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!');
 
                 document.getElementById('formProduto').reset();
                 document.getElementById('inputIdProduto').value = '';
                 listarProdutos();
             })
-            .catch(error => alert('Erro: ' + error.message));
+            .catch(error => mostrarToast('Erro: ' + error.message));
     });
 
     function prepararEdicao(id, nome, qtd, preco, status) {
@@ -236,10 +273,10 @@
         fetch('http://localhost:8080/produtos/' + id, { method: 'DELETE' })
             .then(response => {
                 if(!response.ok) throw new Error("Erro ao excluir. Ele pode estar num pedido.");
-                alert("Excluído com sucesso!");
+                mostrarToast("Excluído com sucesso!");
                 listarProdutos();
             })
-            .catch(error => alert(error.message));
+            .catch(error => mostrarToast(error.message));
     }
 
     // ----------------------------------------------------
