@@ -1371,3 +1371,26 @@ tbody tr:last-child td { border-bottom: 0; }
     to { opacity: 1; }
 }
 
+/* --- Ajustes para Celular (Responsividade) --- */
+@media (max-width: 768px) {
+    header, .header, .nav-container {
+        flex-direction: column !important;
+        height: auto !important;
+        padding-top: 15px !important;
+        padding-bottom: 15px !important;
+        gap: 15px !important;
+    }
+
+    .nav-links {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        margin: 0 !important;
+    }
+
+    .nav-links a {
+        font-size: 12px !important;
+        padding: 5px 8px !important;
+    }
+}
+
