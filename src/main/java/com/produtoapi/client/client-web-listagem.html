@@ -16,7 +16,7 @@
     <script>
         (function () {
             let usuario = null;
-            try { usuario = JSON.parse(localStorage.getItem('usuario')); } catch (e) {}
+            try { usuario = JSON.parse(localStorage.getItem('usuarioLogado')); } catch (e) {}
 
             if (usuario && usuario.role === 'ROLE_DONO') {
                 // libera a página: o body passa a aparecer

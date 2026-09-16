@@ -10,6 +10,7 @@
     <div class="shell" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
         <a class="brand" href="loja.html"><span class="brand-type">DROP 21<small>URBAN SUPPLY</small></span></a>
         <nav class="nav-links" style="margin-left: 0;">
+            <a class="nav-link" href="#" id="nomeUsuarioNav" style="color: var(--success);"></a>
             <a class="nav-link" href="loja.html">Loja</a>
             <a class="nav-link is-current" href="meus-pedidos.html">Meus Pedidos</a>
         </nav>
@@ -89,6 +90,7 @@
     }
 
     const usuario = JSON.parse(logado);
+    document.getElementById('nomeUsuarioNav').textContent = '👤 Olá, ' + usuario.nome.split(' ')[0];
 
     //atualiza a tabela depois de pagar ou cancelar
     function carregarPedidos() {
