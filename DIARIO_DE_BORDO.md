@@ -41,7 +41,7 @@
 **O que foi feito:**
 - Criação das entidades `Pedido.java` e `ItemPedido.java` com relacionamento `@OneToMany` / `@ManyToOne`.
 - Implementação da lógica de criação de pedidos no `PedidoService`, incluindo: busca do produto no banco, verificação de estoque, baixa automática da quantidade, cálculo de subtotais e total.
-- Construção da vitrine e carrinho de compras na `loja.html`.
+- Construção da vitrine e carrinho de compras na `index.html`.
 
 **Dificuldades encontradas:**
 - Ao listar pedidos com seus itens, o sistema entrava em loop infinito (StackOverflowError). O `Pedido` referenciava o `ItemPedido`, que referenciava de volta o `Pedido`, infinitamente. Resolvido com `@JsonIgnore` no campo `pedido` dentro de `ItemPedido`.

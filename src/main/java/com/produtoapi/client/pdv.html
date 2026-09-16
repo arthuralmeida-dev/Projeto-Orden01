@@ -9,8 +9,8 @@
 <body>
 <header class="topbar">
     <div class="shell">
-        <a class="brand" href="loja.html"><span class="brand-type">DROP 21<small>URBAN SUPPLY</small></span></a>
-        <nav class="nav-links"><a class="nav-link" href="loja.html">Loja</a><a class="nav-link is-current" href="pdv.html">PDV</a><a class="nav-link" href="client-web-listagem.html">Gestão</a></nav>
+        <a class="brand" href="index.html"><span class="brand-type">DROP 21<small>URBAN SUPPLY</small></span></a>
+        <nav class="nav-links"><a class="nav-link" href="index.html">Loja</a><a class="nav-link is-current" href="pdv.html">PDV</a><a class="nav-link" href="client-web-listagem.html">Gestão</a></nav>
     </div>
 </header>
 
@@ -86,7 +86,7 @@
         const usr = JSON.parse(userLogado);
         if (usr.role !== 'ROLE_OPERADOR' && usr.role !== 'ROLE_DONO') {
             alert('Acesso negado! Área exclusiva para operadores.');
-            window.location.href = 'loja.html';
+            window.location.href = 'index.html';
         }
     }
 

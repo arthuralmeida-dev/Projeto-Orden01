@@ -13,7 +13,7 @@
     <div class="shell" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
 
         <!-- 1. Logo (Esquerda) -->
-        <a class="brand" href="loja.html">
+        <a class="brand" href="index.html">
             <span class="brand-type">DROP 21<small>URBAN SUPPLY</small></span>
         </a>
 
@@ -142,7 +142,7 @@
 
         if (userStr) {
             const usuario = JSON.parse(userStr);
-            let menuHtml = '<a class="nav-link is-current" href="loja.html">Loja</a>';
+            let menuHtml = '<a class="nav-link is-current" href="index.html">Loja</a>';
             menuHtml += '<a class="nav-link" href="meus-pedidos.html">Meus Pedidos</a>';
             if (usuario.role === 'ROLE_OPERADOR' || usuario.role === 'ROLE_DONO') {
                 menuHtml += '<a class="nav-link" href="pdv.html">PDV</a>';
@@ -160,7 +160,7 @@
             nav.innerHTML = menuHtml;
         } else {
             nav.innerHTML = `
-                <a class="nav-link is-current" href="loja.html">Loja</a>
+                <a class="nav-link is-current" href="index.html">Loja</a>
                 <a class="nav-link" href="login.html" style="color: var(--warning); display: flex; align-items: center; gap: 8px;">
                     👤 Entre ou Cadastre-se
                 </a>

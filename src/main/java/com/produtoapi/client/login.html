@@ -8,7 +8,7 @@
 <body>
 <header class="topbar">
     <div class="shell" style="justify-content: center;">
-        <a class="brand" href="loja.html"><span class="brand-type" style="font-size: 20px;">DROP 21<small>URBAN SUPPLY</small></span></a>
+        <a class="brand" href="index.html"><span class="brand-type" style="font-size: 20px;">DROP 21<small>URBAN SUPPLY</small></span></a>
     </div>
 </header>
 
@@ -99,7 +99,7 @@
                 mostrarToast('Bem-vindo(a) de volta, ' + usuarioBackend.nome + '!');
                 // Sucesso! Salvamos o usuário real do banco no navegador
                 localStorage.setItem('usuarioLogado', JSON.stringify(usuarioBackend));
-                window.location.href = 'loja.html';
+                window.location.href = 'index.html';
             })
             .catch(error => {
                 // Dá o aviso se a senha estiver errada

@@ -22,13 +22,13 @@
                 // libera a página: o body passa a aparecer
                 document.documentElement.classList.add('autorizado');
             } else {
-                // guarda o recado para a loja.html mostrar
+                // guarda o recado para a index.html mostrar
                 sessionStorage.setItem('toastPendente', JSON.stringify({
                     mensagem: 'Acesso negado! Área exclusiva para a gerência.',
                     tipo: 'erro'
                 }));
                 // replace: o botão "voltar" do navegador NÃO volta pra cá
-                location.replace('loja.html');
+                location.replace('index.html');
             }
         })();
     </script>
@@ -38,7 +38,7 @@
 <!-- Cabeçalho (Menu Superior) -->
 <header class="topbar">
     <div class="shell" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-        <a class="brand" href="loja.html">
+        <a class="brand" href="index.html">
             <span class="brand-type">DROP 21<small>URBAN SUPPLY</small></span>
         </a>
 
@@ -192,7 +192,7 @@
 
 
             nav.innerHTML = `
-                <a class="nav-link" href="loja.html">Loja</a>
+                <a class="nav-link" href="index.html">Loja</a>
                 <a class="nav-link" href="pdv.html">PDV</a>
                 <a class="nav-link is-current" href="client-web-listagem.html">Gestão</a>
                 <a class="nav-link" href="#" style="color: var(--success); display: flex; align-items: center; gap: 5px; margin-left: 20px;">
@@ -207,7 +207,7 @@
 
     function sairDaConta() {
         localStorage.removeItem('usuarioLogado');
-        window.location.href = 'loja.html';
+        window.location.href = 'index.html';
     }
 
     // ----------------------------------------------------

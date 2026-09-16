@@ -64,7 +64,7 @@ O Drop 21 é uma plataforma completa que simula o funcionamento de uma loja real
 curso-spring/
 ├── src/main/java/com/produtoapi/
 │   ├── client/                    # Frontend (HTML/CSS/JS)
-│   │   ├── loja.html              # Vitrine e carrinho
+│   │   ├── index.html              # Vitrine e carrinho
 │   │   ├── login.html             # Tela de login
 │   │   ├── cadastro.html          # Tela de cadastro
 │   │   ├── meus-pedidos.html      # Acompanhamento de pedidos
