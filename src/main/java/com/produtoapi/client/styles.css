@@ -1375,6 +1375,7 @@ tbody tr:last-child td { border-bottom: 0; }
 /* --- Ajustes para Celular (Forçado) --- */
 /* --- Ajustes para Celular (Forçado e Completo) --- */
 /* --- Ajustes para Celular (Força o site inteiro a encolher) --- */
+/* --- Ajustes para Celular (Força o site inteiro a encolher) --- */
 @media (max-width: 768px) {
     /* 1. OBRIGA absolutamente todas as tags a não passarem da largura do celular */
     *, *::before, *::after {
@@ -1387,47 +1388,64 @@ tbody tr:last-child td { border-bottom: 0; }
         overflow-x: hidden !important;
     }
 
-    /* 2. Tira larguras fixas de computador (1000px, etc) de qualquer bloco do site */
-    div, section, main, header, footer {
+    div, section, main, footer {
         width: 100% !important;
         min-width: 0 !important;
         padding-left: 10px !important;
         padding-right: 10px !important;
     }
 
-    /* 3. Encolhe os textos gigantes do "O SEU ESTILO. SEM CÓPIA." */
     h1 { font-size: 32px !important; line-height: 1.1 !important; }
     h2 { font-size: 24px !important; }
 
-    /* 4. A Tabela é a ÚNICA que pode rolar para o lado (para não espremer os botões) */
     table {
         display: block !important;
         width: 100% !important;
         max-width: 100% !important;
         overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch; /* Rola suave no iPhone */
+        -webkit-overflow-scrolling: touch;
     }
 
-    /* 5. Ajuste do Cabeçalho */
+    /* --- O SEGREDO DO CABEÇALHO ESTÁ AQUI --- */
     header {
         display: flex !important;
-        flex-direction: column !important;
-        padding: 15px 5px !important;
-        align-items: center !important;
+        flex-direction: column !important; /* Empilha tudo */
+        height: auto !important; /* Mata a altura fixa que causa a sobreposição */
+        padding: 15px 10px !important;
+        position: relative !important;
     }
 
+    /* Pega todas as "caixas" escondidas dentro do cabeçalho e manda empilhar */
+    header > * {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        position: static !important; /* Remove qualquer sobreposição (absolute) */
+        width: 100% !important;
+        height: auto !important;
+        gap: 10px !important;
+    }
+
+    /* Barra de pesquisa e Botão empilhados */
     header input[type="text"] {
         width: 100% !important;
         max-width: 300px !important;
-        margin-bottom: 10px;
+        margin-bottom: 5px !important;
     }
 
+    header button {
+        width: 100% !important;
+        max-width: 300px !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* Menu de links */
     .nav-links {
         display: flex !important;
-        flex-wrap: wrap !important;
+        flex-direction: row !important; /* Links um do lado do outro */
+        flex-wrap: wrap !important;     /* Quebrando linha se não couber */
         justify-content: center !important;
-        gap: 12px !important;
-        margin: 0 !important;
+        gap: 15px !important;
     }
 }
 
