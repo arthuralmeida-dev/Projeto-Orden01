@@ -1372,25 +1372,33 @@ tbody tr:last-child td { border-bottom: 0; }
 }
 
 /* --- Ajustes para Celular (Responsividade) --- */
+/* --- Ajustes para Celular (Forçado) --- */
 @media (max-width: 768px) {
-    header, .header, .nav-container {
-        flex-direction: column !important;
+    header, header > div {
+        display: flex !important;
+        flex-direction: column !important; /* Força ficar em pé (coluna) */
         height: auto !important;
-        padding-top: 15px !important;
-        padding-bottom: 15px !important;
+        padding: 15px !important;
         gap: 15px !important;
     }
 
+    /* Evita que a barra de busca fique gigante no celular */
+    header input[type="text"] {
+        width: 100% !important;
+        max-width: 250px !important;
+    }
+
     .nav-links {
-        flex-wrap: wrap !important;
+        display: flex !important;
+        flex-wrap: wrap !important; /* Força quebra de linha dos botões */
         justify-content: center !important;
-        gap: 10px !important;
+        gap: 15px !important;
         margin: 0 !important;
     }
 
     .nav-links a {
-        font-size: 12px !important;
-        padding: 5px 8px !important;
+        font-size: 13px !important;
     }
 }
+
 
