@@ -24,16 +24,6 @@ public class ItemPedido {
     private double precoUnitario;
     private double subTotal;
 
-    /*public ItemPedido(Long id, Produto produto, Pedido pedido, int quantidade, double precoUnitario, double subTotal){
-        this.id = id;
-        this.produto = produto;
-        this.pedido = pedido;
-        this.quantidade = quantidade;
-        this.precoUnitario = precoUnitario;
-        this.subTotal = subTotal
-
-    }
-    */
     // Construtor vazio (obrigatório pro Spring)
     public ItemPedido() {}
 

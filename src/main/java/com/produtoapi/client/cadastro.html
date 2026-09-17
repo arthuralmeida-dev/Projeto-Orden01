@@ -92,7 +92,7 @@
             })
             .then(data => {
                 // Salva no navegador que o cliente logou!
-                localStorage.setItem('usuarioLogado', JSON.stringify({ nome: data.nome, role: 'ROLE_CLIENTE' }));
+                localStorage.setItem('usuarioLogado', JSON.stringify({ nome: data.nome, email: data.email, role: 'ROLE_CLIENTE' }));
 
                 // Troca o formulário por uma mensagem de sucesso lindona
                 const form = document.getElementById('formCadastro');

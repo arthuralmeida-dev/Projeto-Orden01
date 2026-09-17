@@ -60,7 +60,7 @@ public class DataSeeder implements CommandLineRunner {
         // Criação automática do usuário DONO
         if (usuarioRepository.findByEmail("admin@drop21.com").isEmpty()) {
             Usuario admin = new Usuario();
-            admin.setNome("Chefe Drop 21");
+            admin.setNome("TesteGestão");
             admin.setEmail("admin@drop21.com");
 
             org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder encoder = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
@@ -75,7 +75,7 @@ public class DataSeeder implements CommandLineRunner {
         // Criação automática do usuário OPERADOR (Caixa)
         if (usuarioRepository.findByEmail("operador@drop21.com").isEmpty()) {
             Usuario operador = new Usuario();
-            operador.setNome("Caixa Drop 21");
+            operador.setNome("TestePDV");
             operador.setEmail("operador@drop21.com");
 
             org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder encoder = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
