@@ -214,7 +214,7 @@
     // O SEU CÓDIGO ORIGINAL DE PRODUTOS
     // ----------------------------------------------------
     function listarProdutos() {
-        fetch('https://perifericos-drop21.vercel.app//produtos')
+        fetch('https://drop21-back.onrender.com//produtos')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Erro na rede: ' + response.status);
@@ -264,7 +264,7 @@
             status: document.getElementById('inputStatus').value,
         };
 
-        const url = idV ? 'https://perifericos-drop21.vercel.app//produtos/' + idV : 'https://perifericos-drop21.vercel.app//produtos';
+        const url = idV ? 'https://drop21-back.onrender.com//produtos/' + idV : 'https://drop21-back.onrender.com//produtos';
         const method = idV ? 'PUT' : 'POST';
 
         fetch(url, {
@@ -294,7 +294,7 @@
 
     function excluirProduto(id) {
         if (!confirm("Tem certeza que deseja excluir este produto? O botão não tem volta!")) return;
-        fetch('https://perifericos-drop21.vercel.app//produtos/' + id, { method: 'DELETE' })
+        fetch('https://drop21-back.onrender.com//produtos/' + id, { method: 'DELETE' })
             .then(response => {
                 if(!response.ok) throw new Error("Erro ao excluir. Ele pode estar num pedido.");
                 mostrarToast("Excluído com sucesso!");
@@ -308,7 +308,7 @@
     // ----------------------------------------------------
     function carregarVendasDoDia() {
         // Pedidos da Loja Online
-        fetch('https://perifericos-drop21.vercel.app//pedidos')
+        fetch('https://drop21-back.onrender.com//pedidos')
             .then(response => response.json())
             .then(pedidos => {
                 const tbody = document.getElementById('tabelaPedidosOnline').getElementsByTagName('tbody')[0];
@@ -325,7 +325,7 @@
             .catch(error => console.error('Erro ao carregar pedidos:', error));
 
         // Vendas do PDV (Balcão)
-        fetch('https://perifericos-drop21.vercel.app//caixa/vendas')
+        fetch('https://drop21-back.onrender.com//caixa/vendas')
             .then(response => response.json())
             .then(vendas => {
                 const tbody = document.getElementById('tabelaVendasBalcao').getElementsByTagName('tbody')[0];
