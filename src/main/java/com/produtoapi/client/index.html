@@ -250,7 +250,7 @@
             itens: carrinho
         };
 
-        fetch('https://drop21-back.onrender.com//pedidos', {
+        fetch('https://drop-21.onrender.com//pedidos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(pedidoJson)
@@ -270,7 +270,7 @@
     });
 
     function carregarProdutos() {
-        fetch('https://drop21-back.onrender.com//produtos')
+        fetch('https://drop-21.onrender.com//produtos')
             .then(response => {
                 if (!response.ok) throw new Error('Erro na rede: ' + response.status);
                 return response.json();
@@ -299,7 +299,7 @@
 
     function buscarProdutos() {
         const termo = document.getElementById('inputBusca').value;
-        fetch('https://drop21-back.onrender.com//produtos/buscar?nome=' + termo)
+        fetch('https://drop-21.onrender.com//produtos/buscar?nome=' + termo)
             .then(res => res.json())
             .then(data => {
                 const tableBody = document.getElementById('vitrineTable').getElementsByTagName('tbody')[0];
