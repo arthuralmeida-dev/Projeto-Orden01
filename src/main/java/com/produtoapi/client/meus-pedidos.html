@@ -94,7 +94,7 @@
 
     //atualiza a tabela depois de pagar ou cancelar
     function carregarPedidos() {
-        fetch('https://drop-21.onrender.com//pedidos/cliente?email=' + usuario.email)
+        fetch('https://drop-21.onrender.com/pedidos/cliente?email=' + usuario.email)
             .then(response => {
                 if (!response.ok) throw new Error('Erro ao buscar pedidos');
                 return response.json();
@@ -172,7 +172,7 @@
         const ok = await mostrarConfirm('Confirmar pagamento do pedido #' + id + ' via ' + formaPagamento + '?');
         if (!ok) return;
 
-        fetch('https://drop-21.onrender.com//pedidos/' + id + '/pagar', {
+        fetch('https://drop-21.onrender.com/pedidos/' + id + '/pagar', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ formaPagamento: formaPagamento })
@@ -189,7 +189,7 @@
         const ok = await mostrarConfirm('Tem certeza que deseja cancelar o pedido #' + id + '? Os produtos voltarão ao estoque.');
         if (!ok) return;
 
-        fetch('https://drop-21.onrender.com//pedidos/' + id + '/cancelar', {
+        fetch('https://drop-21.onrender.com/pedidos/' + id + '/cancelar', {
             method: 'PUT'
         })
             .then(response => {
