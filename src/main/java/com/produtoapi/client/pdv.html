@@ -136,7 +136,7 @@
 
         const abrirRequest = { operadorNome: operador, valorInicial: parseFloat(troco) };
 
-        fetch('http://localhost:8080/caixa/abrir', {
+        fetch('https://perifericos-drop21.vercel.app//caixa/abrir', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(abrirRequest)
@@ -164,7 +164,7 @@
 
         if (!produtoId) { mostrarToast("Digite o ID do produto!"); return; }
 
-        fetch('http://localhost:8080/produtos/' + produtoId)
+        fetch('https://perifericos-drop21.vercel.app//produtos/' + produtoId)
             .then(res => {
                 if (!res.ok) throw new Error("Produto não encontrado!");
                 return res.json();
@@ -206,7 +206,7 @@
             itens: carrinhoPdv
         };
 
-        fetch('http://localhost:8080/caixa/' + caixaIdAtual + '/venda', {
+        fetch('https://perifericos-drop21.vercel.app//caixa/' + caixaIdAtual + '/venda', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(vendaJson)
@@ -226,7 +226,7 @@
 
     function fecharCaixa() {
         if (!confirm('Tem certeza que deseja fechar o caixa?')) return;
-        fetch('http://localhost:8080/caixa/' + caixaIdAtual + '/fechar', { method: 'PUT' })
+        fetch('https://perifericos-drop21.vercel.app//caixa/' + caixaIdAtual + '/fechar', { method: 'PUT' })
             .then(response => {
                 if (!response.ok) throw new Error('Erro ao fechar caixa');
                 return response.json();

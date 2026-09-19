@@ -250,7 +250,7 @@
             itens: carrinho
         };
 
-        fetch('http://localhost:8080/pedidos', {
+        fetch('https://perifericos-drop21.vercel.app//pedidos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(pedidoJson)
@@ -270,7 +270,7 @@
     });
 
     function carregarProdutos() {
-        fetch('http://localhost:8080/produtos')
+        fetch('https://perifericos-drop21.vercel.app//produtos')
             .then(response => {
                 if (!response.ok) throw new Error('Erro na rede: ' + response.status);
                 return response.json();
@@ -299,7 +299,7 @@
 
     function buscarProdutos() {
         const termo = document.getElementById('inputBusca').value;
-        fetch('http://localhost:8080/produtos/buscar?nome=' + termo)
+        fetch('https://perifericos-drop21.vercel.app//produtos/buscar?nome=' + termo)
             .then(res => res.json())
             .then(data => {
                 const tableBody = document.getElementById('vitrineTable').getElementsByTagName('tbody')[0];
