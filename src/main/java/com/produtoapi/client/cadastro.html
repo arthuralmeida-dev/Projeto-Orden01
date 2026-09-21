@@ -75,6 +75,11 @@
     document.getElementById('formCadastro').addEventListener('submit', function(event) {
         event.preventDefault();
 
+        const btn = this.querySelector('button[type="submit"]');
+        const textoOriginal = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Criando conta...';
+
         const usuarioJson = {
             nome: document.getElementById('inputNome').value,
             email: document.getElementById('inputEmail').value,
@@ -109,6 +114,8 @@
             })
             .catch(error => {
                 mostrarToast('Erro: ' + error.message);
+                btn.disabled = false;
+                btn.textContent = textoOriginal;
             });
     });
 </script>

@@ -80,6 +80,11 @@
     document.getElementById('formLogin').addEventListener('submit', function(e) {
         e.preventDefault();
 
+        const btn = this.querySelector('button[type="submit"]');
+        const textoOriginal = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Conectando ao servidor...';
+
         // Pega o que o usuário digitou usando os IDs
         const loginData = {
             email: document.getElementById('inputEmailLogin').value,
@@ -105,6 +110,8 @@
             .catch(error => {
                 // Dá o aviso se a senha estiver errada
                 mostrarToast(error.message);
+                btn.disabled = false;
+                btn.textContent = textoOriginal;
             });
     });
 </script>
