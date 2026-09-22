@@ -270,14 +270,20 @@
     });
 
     function carregarProdutos() {
+        const tableBody = document.getElementById('vitrineTable').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--muted);">⏳ Carregando vitrine (conectando ao servidor)...</td></tr>';
+
         fetch('https://drop-21.onrender.com/produtos')
             .then(response => {
                 if (!response.ok) throw new Error('Erro na rede: ' + response.status);
                 return response.json();
             })
             .then(data => {
-                const tableBody = document.getElementById('vitrineTable').getElementsByTagName('tbody')[0];
                 tableBody.innerHTML = '';
+                if (data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--muted);">Nenhum produto cadastrado no momento.</td></tr>';
+                    return;
+                }
                 data.forEach(produto => {
                     const row = tableBody.insertRow()
                     row.insertCell(0).innerHTML = '<span class="product-name">' + produto.nome + '</span>';
@@ -293,6 +299,7 @@
             })
             .catch(error => {
                 console.error('Erro ao buscar produtos: ', error);
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--warning);"><p style="margin: 0 0 10px;">O servidor estava acordando. Clique abaixo para carregar:</p><button class="button compact" onclick="carregarProdutos()">Tentar novamente 🔄</button></td></tr>';
                 mostrarToast('Opa! Não conseguimos carregar os produtos. O servidor está ligado?');
             });
     }
