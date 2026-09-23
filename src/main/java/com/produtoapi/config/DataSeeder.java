@@ -57,33 +57,35 @@ public class DataSeeder implements CommandLineRunner {
             System.out.println("Produtos cadastrados com sucesso pelo Seeder!");
         }
 
-        // Criação automática do usuário DONO
-        if (usuarioRepository.findByEmail("admin@drop21.com").isEmpty()) {
+        org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder encoder = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
+
+        // Criação ou Atualização do usuário DONO
+        java.util.Optional<Usuario> adminOpt = usuarioRepository.findByEmail("admin@drop21.com");
+        if (adminOpt.isEmpty()) {
             Usuario admin = new Usuario();
             admin.setNome("TesteGestão");
             admin.setEmail("admin@drop21.com");
-
-            org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder encoder = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
-
-            // OLHA A MUDANÇA AQUI (sem aspas):
             admin.setSenha(encoder.encode(adminPassword));
-
             admin.setRole("ROLE_DONO");
+            usuarioRepository.save(admin);
+        } else {
+            Usuario admin = adminOpt.get();
+            admin.setSenha(encoder.encode(adminPassword));
             usuarioRepository.save(admin);
         }
 
-        // Criação automática do usuário OPERADOR (Caixa)
-        if (usuarioRepository.findByEmail("operador@drop21.com").isEmpty()) {
+        // Criação ou Atualização do usuário OPERADOR (Caixa)
+        java.util.Optional<Usuario> operadorOpt = usuarioRepository.findByEmail("operador@drop21.com");
+        if (operadorOpt.isEmpty()) {
             Usuario operador = new Usuario();
             operador.setNome("TestePDV");
             operador.setEmail("operador@drop21.com");
-
-            org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder encoder = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
-
-            // OLHA A MUDANÇA AQUI (sem aspas):
             operador.setSenha(encoder.encode(operadorPassword));
-
             operador.setRole("ROLE_OPERADOR");
+            usuarioRepository.save(operador);
+        } else {
+            Usuario operador = operadorOpt.get();
+            operador.setSenha(encoder.encode(operadorPassword));
             usuarioRepository.save(operador);
         }
 
